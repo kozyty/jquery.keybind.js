@@ -1,0 +1,78 @@
+jquery.keybind
+==============
+
+This library attempts to provide a reasonable, portable implementation of
+keybinding support for jQuery. Browser keyboard events are a notoriously
+hairy collection of cross-browser incompatibilities.
+
+The goal is essentially to allow listening for key presses without the
+need to concern oneself with the differences between keydown/keyup/keypress.
+This library hopes to make it possible to write code as if keypress were
+the only event, and the event always accurately described the keys pressed.
+
+
+Examples
+--------
+
+    $(document).keybind('a', function(key, event) {
+      // key is an object describing the keychord that triggered this event:
+      //   { chord: 'a',      modified: false, shift: false, ctrl: false, ... }
+      //   { chord: 'C-<F1>', modified: true,  shift: false, ctrl: true, ... }
+      // event is the jQuery event object
+      // event.originalEvent is the browser's event object, stored by jQuery
+    });
+
+    // Binding multiple keys at once:
+    $(document).keybind({ 'C-s': save,
+                          'C-z': undo,
+                          'C-<Backspace>': deleteWord });
+
+    // Removing bindings:
+    $(document).keybind('C-s', save);
+    $(document).keyunbind('C-s');
+
+    // Multiple callbacks for a single keybinding:
+    $(document).keybind('C-s', backup)
+               .keybind('C-s', save);
+    $(document).keyunbind('C-s', backup); // C-s still bound to save
+    $(document).keyunbind('C-s');         // clears all handlers bound to the key
+
+    // Emacs-esque key sequences:
+    $(document).keybind('C-x C-f', open);
+    $(document).keybind('<Up> <Up> <Down> <Down> <Left> <Right> <Left> <Right> b a',
+                        konami);
+
+    // Indiscriminate binding:
+    //   -- I don't really know how this would work. I may skip it.
+    //      Does it report a "just modifier" keypress?
+    $(document).keybind(function(key, event) {
+      // ...
+    });
+
+
+References
+----------
+
+There are a number of articles detailing the differences in keyboard event
+handling across browsers. I have relied primarily upon:
+
+* [DOM Level 3 Events Specification](http://www.w3.org/TR/DOM-Level-3-Events/)
+* [JavaScript Madness: Keyboard Events](http://unixpapa.com/js/key.html)
+* [Quirksmode on Detecting Keystrokes](http://www.quirksmode.org/js/keys.html)
+* [Keyboard accessibility in web applications](http://dev.opera.com/articles/view/keyboard-accessible-web-applications-3/)
+
+I have also referenced two libraries which make efforts to hide much of the
+insanity of the raw browser keyboard events:
+
+* [Google's Closure](http://code.google.com/closure/library/); specifically, see
+  [keyhandler.js](http://code.google.com/p/closure-library/source/browse/trunk/closure/goog/events/keyhandler.js),
+  [keycodes.js](http://code.google.com/p/closure-library/source/browse/trunk/closure/goog/events/keycodes.js),
+  and most helpfully,
+  [keyhandler_test.html](http://code.google.com/p/closure-library/source/browse/trunk/closure/goog/events/keyhandler_test.html).
+* The example code from the dev.opera.com article linked above, available for download
+  [here](http://dev.opera.com/articles/view/keyboard-accessible-web-applications-1/);
+  specifically, see app4/lib.js.
+
+Both of the above libraries have detailed comments explaining what they do, and
+have been an enormous help. I would have rm -rf'd this project had I not had them
+available for reference.

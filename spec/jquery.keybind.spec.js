@@ -223,6 +223,12 @@ Screw.Unit(function() {
           expect(key.chord).to(equal, 'Left');
         });
 
+        it("supports IE", function() {
+          triggerEvent('keydown', 37, 0);
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'Left');
+        });
+
         it("does not confuse arrow keys with punctuation", function() {
           jQuery(document).keybind('%', function(k, e) {
             count++;

@@ -43,14 +43,14 @@ test('Lowercase characters', function() {
   // WebKit 533.2
   triggerEvent('keydown', 65, 0);
   triggerEvent('keypress', 65, 97);
-  equals(cnt, 1, "Only triggers once");
+  equals(cnt, 1, "WebKit: Only triggers once");
   equals(key.chord, 'a', 'WebKit');
 
   // Firefox/Namoroka 3.6.3
   cnt = 0;
   triggerEvent('keydown', 65, 0);
   triggerEvent('keypress', 0, 97);
-  equals(cnt, 1, "Only triggers once");
+  equals(cnt, 1, "Gecko: Only triggers once");
   equals(key.chord, 'a', 'Gecko');
 });
 
@@ -68,7 +68,7 @@ test('Uppercase characters', function() {
   triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
                                    shiftKey: true });
   triggerEvent('keypress', 65, 65, { shiftKey: true });
-  equals(cnt, 1, "Only triggers once");
+  equals(cnt, 1, "WebKit: Only triggers once");
   equals(key.chord, 'A', 'WebKit');
 
   // Firefox/Namoroka 3.6.3
@@ -76,8 +76,31 @@ test('Uppercase characters', function() {
   triggerEvent('keydown', 16, 0);
   triggerEvent('keydown', 65, 0, { shiftKey: true });
   triggerEvent('keypress', 0, 65, { shiftKey: true });
-  equals(cnt, 1, "Only triggers once");
+  equals(cnt, 1, "Gecko: Only triggers once");
   equals(key.chord, 'A', 'Gecko');
+});
+
+test('Enter', function() {
+  var key, event, cnt = 0;
+
+  jQuery(document).keybind('<Enter>', function(k, e) {
+    cnt++;
+    key = k;
+    event = e;
+  });
+
+  // WebKit 533.2
+  triggerEvent('keydown', 13, 0);
+  triggerEvent('keypress', 13, 13);
+  equals(cnt, 1, "WebKit: Only triggers once");
+  equals(key.chord, '<Enter>', 'WebKit');
+
+  // Gecko
+  cnt = 0;
+  triggerEvent('keydown', 13, 0);
+  triggerEvent('keypress', 13, 13);
+  equals(cnt, 1, "Gecko: Only triggers once");
+  equals(key.chord, '<Enter>', 'Gecko');
 });
 
 function triggerEvent(type, keyCode, charCode, props) {

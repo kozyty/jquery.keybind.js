@@ -16,8 +16,8 @@ Examples
 
     $(document).keybind('a', function(key, event) {
       // key is an object describing the keychord that triggered this event:
-      //   { chord: 'a',      modified: false, shift: false, ctrl: false, ... }
-      //   { chord: 'C-<F1>', modified: true,  shift: false, ctrl: true, ... }
+      //   { chord: 'a',    modified: false, shift: false, ctrl: false, ... }
+      //   { chord: 'C-F1', modified: true,  shift: false, ctrl: true, ... }
       // event is the jQuery event object
       // event.originalEvent is the browser's event object, stored by jQuery
     });
@@ -25,7 +25,7 @@ Examples
     // Binding multiple keys at once:
     $(document).keybind({ 'C-s': save,
                           'C-z': undo,
-                          'C-<Backspace>': deleteWord });
+                          'C-Backspace': deleteWord });
 
     // Removing bindings:
     $(document).keybind('C-s', save);
@@ -39,7 +39,7 @@ Examples
 
     // Emacs-esque key sequences:
     $(document).keybind('C-x C-f', open);
-    $(document).keybind('<Up> <Up> <Down> <Down> <Left> <Right> <Left> <Right> b a',
+    $(document).keybind('Up Up Down Down Left Right Left Right b a',
                         konami);
 
     // Indiscriminate binding:

@@ -1,4 +1,20 @@
-module('jquery.keybind');
+module('Features');
+
+test("One key sequence, multiple bindings", function() {
+  var fired = [],
+      fnA = function() { fired.push('fnA'); },
+      fnB = function() { fired.push('fnB'); };
+
+  jQuery(document).keybind('a', fnA).keybind('a', fnB);
+
+  // shouldn't have to use this interface to trigger events at this
+  // level, but no better solution atm
+  triggerEvent('keydown', 65, 0);
+  triggerEvent('keypress', 65, 97);
+  same(fired, ['fnA', 'fnB'], "Fires all bound handlers, in order");
+});
+
+module('Portability');
 
 // Maybe better to organize as closure does, by browser.
 // We'll see.

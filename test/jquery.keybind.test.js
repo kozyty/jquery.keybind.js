@@ -4,47 +4,55 @@ module('jquery.keybind');
 // We'll see.
 
 test('Lowercase characters', function() {
-  var key, event;
+  var key, event, cnt = 0;
 
   jQuery(document).keybind('a', function(k, e) {
+    cnt++;
     key = k;
     event = e;
   });
 
   // WebKit 533.2
-  fireEvent('keydown', 65, 0);
-  fireEvent('keypress', 65, 97);
-  equals(key.chord, 'a');
+  triggerEvent('keydown', 65, 0);
+  triggerEvent('keypress', 65, 97);
+  equals(cnt, 1, "Only triggers once");
+  equals(key.chord, 'a', 'WebKit');
 
   // Firefox/Namoroka 3.6.3
-  fireEvent('keydown', 65, 0);
-  fireEvent('keypress', 0, 97);
-  equals(key.chord, 'a');
+  cnt = 0;
+  triggerEvent('keydown', 65, 0);
+  triggerEvent('keypress', 0, 97);
+  equals(cnt, 1, "Only triggers once");
+  equals(key.chord, 'a', 'Gecko');
 });
 
 test('Uppercase characters', function() {
-  var key, event;
+  var key, event, cnt = 0;
 
   jQuery(document).keybind('A', function(k, e) {
+    cnt++;
     key = k;
     event = e;
   });
 
   // WebKit 533.2
-  fireEvent('keydown', 16, 0, { keyIdentifier: 'Shift' });
-  fireEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
-                                shiftKey: true });
-  fireEvent('keypress', 65, 65, { shiftKey: true });
-  equals(key.chord, 'A');
+  triggerEvent('keydown', 16, 0, { keyIdentifier: 'Shift' });
+  triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
+                                   shiftKey: true });
+  triggerEvent('keypress', 65, 65, { shiftKey: true });
+  equals(cnt, 1, "Only triggers once");
+  equals(key.chord, 'A', 'WebKit');
 
   // Firefox/Namoroka 3.6.3
-  fireEvent('keydown', 16, 0);
-  fireEvent('keydown', 65, 0, { shiftKey: true });
-  fireEvent('keypress', 0, 65, { shiftKey: true });
-  equals(key.chord, 'A');
+  cnt = 0;
+  triggerEvent('keydown', 16, 0);
+  triggerEvent('keydown', 65, 0, { shiftKey: true });
+  triggerEvent('keypress', 0, 65, { shiftKey: true });
+  equals(cnt, 1, "Only triggers once");
+  equals(key.chord, 'A', 'Gecko');
 });
 
-function fireEvent(type, keyCode, charCode, props) {
+function triggerEvent(type, keyCode, charCode, props) {
   var event = mockEvent(type, keyCode, charCode, props);
   jQuery(document).trigger(event);
 }

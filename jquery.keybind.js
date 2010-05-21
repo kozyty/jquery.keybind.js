@@ -47,7 +47,7 @@
     var data = $(this).data('keybind'),
         key  = { chord: eventChord(event) };
 
-    if ((event.charCode && event.charCode >= 37 && event.charCode <= 40) ||
+    if ((event.charCode >= 37 && event.charCode <= 40) ||
         !shouldTriggerOnKeydown(event))
       triggerHandlers(data.bindings, key, event);
 

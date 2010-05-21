@@ -47,9 +47,10 @@
 
   function keypressHandler(event) {
     var data = $(this).data('keybind'),
-        key  = { chord: eventChord(event.charCode || event.keyCode, event) };
+        key  = { chord: eventChord(event) };
 
-    if (!shouldTriggerOnKeydown(event))
+    if ((event.charCode && event.charCode >= 37 && event.charCode <= 40) ||
+        !shouldTriggerOnKeydown(event))
       triggerHandlers(data.bindings, key, event);
 
     return false;
@@ -60,7 +61,7 @@
       return;
 
     var data = $(this).data('keybind'),
-        key  = { chord: eventChord(event.keyCode, event) };
+        key  = { chord: eventChord(event) };
 
     triggerHandlers(data.bindings, key, event);
     return false;
@@ -69,8 +70,11 @@
   function keyupHandler(event) {
   }
 
-  function eventChord(key, event) {
-    return _specialKeys[key] || String.fromCharCode(key);
+  function eventChord(event) {
+    if (event.type === 'keypress')
+      return String.fromCharCode(event.charCode || event.keyCode);
+    else
+      return _specialKeys[event.keyCode];
   }
 
   function triggerHandlers(bindings, key, event) {
@@ -80,11 +84,11 @@
   }
 
   function shouldTriggerOnKeydown(event) {
-    return event.keyCode === 27;
+    return event.keyCode in _specialKeys;
   }
 
   var _specialKeys = {
-    13: 'Enter', 27: 'Esc'
+    13: 'Enter', 27: 'Esc', 37: 'Left', 38: 'Up', 39: 'Right', 40: 'Down'
   };
 
 }(jQuery));

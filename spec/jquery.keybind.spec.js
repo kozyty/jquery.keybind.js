@@ -169,6 +169,8 @@ Screw.Unit(function() {
       });
 
       describe('Esc', function() {
+        var key, event, count;
+
         before(function() {
           count = 0;
           jQuery(document).keybind('Esc', function(k, e) {
@@ -194,8 +196,51 @@ Screw.Unit(function() {
         });
       });
 
-    });
+      describe('Arrow keys', function() {
+        var key, event, count,
+            handler = function(k, e) {
+              count++;
+              key = k;
+              event = e;
+            };
 
+        before(function() {
+          count = 0;
+          key = event = null;
+          jQuery(document).keybind('Left', handler);
+        });
+
+        it("supports WebKit", function() {
+          triggerEvent('keydown', 37, 0, { keyIdentifier: 'Left' });
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'Left');
+        });
+
+        it("supports Gecko", function() {
+          triggerEvent('keydown', 37, 0);
+          triggerEvent('keypress', 37, 0);
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'Left');
+        });
+
+        it("does not confuse arrow keys with punctuation", function() {
+          jQuery(document).keybind('%', function(k, e) {
+            count++;
+            key = k;
+            event = e;
+          });
+
+          // a la WebKit
+          triggerEvent('keydown', 16, 0);
+          triggerEvent('keydown', 53, 0, { keyIdentifier: 'U+0035',
+                                           shiftKey: true });
+          triggerEvent('keypress', 37, 37, { shiftKey: true });
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, '%');
+        });
+      });
+
+    });
   });
 
   function triggerEvent(type, keyCode, charCode, props) {

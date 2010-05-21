@@ -49,13 +49,21 @@
     var data = $(this).data('keybind'),
         key  = { chord: eventChord(event.charCode || event.keyCode, event) };
 
-    if (data.bindings[key.chord] !== undefined)
-      $.each(data.bindings[key.chord], function(i, fn) { fn(key, event); });
+    if (!shouldTriggerOnKeydown(event))
+      triggerHandlers(data.bindings, key, event);
 
     return false;
   }
 
   function keydownHandler(event) {
+    if (!shouldTriggerOnKeydown(event))
+      return;
+
+    var data = $(this).data('keybind'),
+        key  = { chord: eventChord(event.keyCode, event) };
+
+    triggerHandlers(data.bindings, key, event);
+    return false;
   }
 
   function keyupHandler(event) {
@@ -65,8 +73,18 @@
     return _specialKeys[key] || String.fromCharCode(key);
   }
 
+  function triggerHandlers(bindings, key, event) {
+    var handlers = bindings[key.chord];
+    if (handlers !== undefined)
+      $.each(handlers, function(i, fn) { fn(key, event); });
+  }
+
+  function shouldTriggerOnKeydown(event) {
+    return event.keyCode === 27;
+  }
+
   var _specialKeys = {
-    13: 'Enter'
+    13: 'Enter', 27: 'Esc'
   };
 
 }(jQuery));

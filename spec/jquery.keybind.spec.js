@@ -168,6 +168,32 @@ Screw.Unit(function() {
         });
       });
 
+      describe('Esc', function() {
+        before(function() {
+          count = 0;
+          jQuery(document).keybind('Esc', function(k, e) {
+            key = k;
+            event = e;
+            count++;
+          });
+        });
+
+        it("supports WebKit", function() {
+          triggerEvent('keydown', 27, 0);
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'Esc');
+        });
+
+        it("supports Gecko and IE", function() {
+          triggerEvent('keydown', 27, 0);
+          triggerEvent('keypress', 27, 0);
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'Esc');
+        });
+      });
+
     });
 
   });

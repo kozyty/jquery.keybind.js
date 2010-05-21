@@ -5,6 +5,26 @@ Screw.Unit(function() {
       jQuery(document).keyunbindAll();
     });
 
+    describe("Creating multiple bindings in one call", function() {
+      var fired,
+          fnA = function() { fired.push('fnA'); },
+          fnB = function() { fired.push('fnB'); };
+
+      before(function() {
+        fired = [];
+        jQuery(document).keybind({ 'a': fnA, 'b': fnB });
+      });
+
+      it("attaches each seq->handler pair", function() {
+        triggerEvent('keydown', 66, 0);
+        triggerEvent('keypress', 66, 98);
+        triggerEvent('keydown', 65, 0);
+        triggerEvent('keypress', 65, 97);
+
+        expect(fired).to(equal, ['fnB', 'fnA']);
+      });
+    });
+
     describe("One key sequence, multiple bindings", function() {
       var fired,
           fnA = function() { fired.push('fnA'); },

@@ -1,5 +1,4 @@
 (function($) {
-
   $.fn.extend({
     keybind: function(seq, handler) {
       var data = this.data('keybind'),
@@ -13,11 +12,10 @@
                     keyup:    keyupHandler });
       }
 
-      handlers = data.bindings[seq];
-      if (handlers)
-        handlers.push(handler);
+      if (typeof seq === "object")
+        $.each(seq, function(s, h) { attachBinding(data.bindings, s, h); });
       else
-        data.bindings[seq] = [handler];
+        attachBinding(data.bindings, seq, handler);
 
       return this;
     },
@@ -68,6 +66,14 @@
   }
 
   function keyupHandler(event) {
+  }
+
+  function attachBinding(bindings, seq, handler) {
+    var handlers = bindings[seq];
+    if (handlers)
+      handlers.push(handler)
+    else
+      bindings[seq] = [handler];
   }
 
   function eventChord(event) {

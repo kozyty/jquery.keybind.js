@@ -47,7 +47,7 @@
 
   function keypressHandler(event) {
     var data = $(this).data('keybind'),
-        key  = { chord: String.fromCharCode(event.charCode) };
+        key  = { chord: eventChord(event.charCode || event.keyCode, event) };
 
     if (data.bindings[key.chord] !== undefined)
       $.each(data.bindings[key.chord], function(i, fn) { fn(key, event); });
@@ -60,5 +60,13 @@
 
   function keyupHandler(event) {
   }
+
+  function eventChord(key, event) {
+    return _specialKeys[key] || String.fromCharCode(key);
+  }
+
+  var _specialKeys = {
+    13: 'Enter'
+  };
 
 }(jQuery));

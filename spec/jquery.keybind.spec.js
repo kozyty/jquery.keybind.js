@@ -122,6 +122,35 @@ Screw.Unit(function() {
         });
       });
 
+      describe('Enter', function() {
+        var key, event, count;
+
+        before(function() {
+          count = 0;
+          jQuery(document).keybind('Enter', function(k, e) {
+            key = k;
+            event = e;
+            count++;
+          });
+        });
+
+        it("supports WebKit", function() {
+          triggerEvent('keydown', 13, 0, { keyIdentifier: 'Enter' });
+          triggerEvent('keypress', 13, 13, { keyIdentifier: 'Enter' });
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'Enter');
+        });
+
+        it("supports Gecko", function() {
+          triggerEvent('keydown', 13, 0);
+          triggerEvent('keypress', 13, 0);
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'Enter');
+        });
+      });
+
     });
 
   });

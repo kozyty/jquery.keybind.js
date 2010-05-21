@@ -12,6 +12,18 @@ test("One key sequence, multiple bindings", function() {
   triggerEvent('keydown', 65, 0);
   triggerEvent('keypress', 65, 97);
   same(fired, ['fnA', 'fnB'], "Fires all bound handlers, in order");
+
+  fired = [];
+  jQuery(document).keyunbind('a', fnA);
+  triggerEvent('keydown', 65, 0);
+  triggerEvent('keypress', 65, 97);
+  same(fired, ['fnB'], "Can unbind a single handler by function");
+
+  fired = [];
+  jQuery(document).keybind('a', fnB).keyunbind('a');
+  triggerEvent('keydown', 65, 0);
+  triggerEvent('keypress', 65, 97);
+  same(fired, [], "Can unbind all handlers for a sequence at once");
 });
 
 module('Portability');

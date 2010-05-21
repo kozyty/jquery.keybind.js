@@ -23,6 +23,16 @@
     },
 
     keyunbind: function(seq, handler) {
+      var data = this.data('keybind'),
+          handlers = data.bindings[seq];
+
+      if (handler !== undefined) {
+        data.bindings[seq] = $.grep(data.bindings[seq], function(h) {
+          return h !== handler;
+        });
+      } else
+        delete data.bindings[seq];
+
       return this;
     }
   });

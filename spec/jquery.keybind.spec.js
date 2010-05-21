@@ -88,6 +88,14 @@ Screw.Unit(function() {
           expect(count).to(equal, 1);
           expect(key.chord).to(equal, 'a');
         });
+
+        it("supports IE", function() {
+          triggerEvent('keydown', 65, 0);
+          triggerEvent('keypress', 97, 0);
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'a');
+        });
       });
 
       describe('Uppercase characters', function() {
@@ -120,6 +128,15 @@ Screw.Unit(function() {
           expect(count).to(equal, 1);
           expect(key.chord).to(equal, 'A');
         });
+
+        it("supports IE", function() {
+          triggerEvent('keydown', 16, 0);
+          triggerEvent('keydown', 65, 0, { shiftKey: true });
+          triggerEvent('keypress', 65, 0, { shiftKey: true });
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'A');
+        });
       });
 
       describe('Enter', function() {
@@ -142,7 +159,7 @@ Screw.Unit(function() {
           expect(key.chord).to(equal, 'Enter');
         });
 
-        it("supports Gecko", function() {
+        it("supports Gecko and IE", function() {
           triggerEvent('keydown', 13, 0);
           triggerEvent('keypress', 13, 0);
 

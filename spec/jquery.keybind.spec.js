@@ -74,7 +74,7 @@ Screw.Unit(function() {
         });
 
         it("supports WebKit", function() {
-          triggerEvent('keydown', 65, 0);
+          triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041' });
           triggerEvent('keypress', 65, 97);
 
           expect(count).to(equal, 1);

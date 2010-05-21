@@ -34,6 +34,14 @@
         delete data.bindings[seq];
 
       return this;
+    },
+
+    keyunbindAll: function() {
+      $(this).removeData('keybind')
+             .unbind({ keypress: keypressHandler,
+                       keydown:  keydownHandler,
+                       keyup:    keyupHandler });
+      return this;
     }
   });
 

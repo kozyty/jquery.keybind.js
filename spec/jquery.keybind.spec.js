@@ -1,186 +1,162 @@
 Screw.Unit(function() {
   describe('jquery.keybind plugin', function() {
+    var cbLogger;
+
+    before(function() {
+      cbLogger = new CallbackLogger();
+    });
+
+    // Returns a callback which can track callback order by name.
+    function loggingCallback(name) {
+      return function(key, event) { cbLogger.log(name, key, event); };
+    }
+
+    function returnTrue(key, event) {
+      cbLogger.log('returnTrue', key, event);
+      return true;
+    }
+
+    function returnFalse(key, event) {
+      cbLogger.log('returnFalse', key, event);
+      return false;
+    }
+
+    function loggedOrder()   { return cbLogger.order; }
+    function loggedEvent()   { return cbLogger.event; }
+    function loggedKey()     { return cbLogger.key; }
+    function loggedKeyName() { return cbLogger.key.chord; }
+    function loggedCount()   { return cbLogger.count; }
 
     after(function() {
       jQuery(document).keyunbindAll();
     });
 
     describe("Creating multiple bindings in one call", function() {
-      var fired,
-          fnA = function() { fired.push('fnA'); },
-          fnB = function() { fired.push('fnB'); };
-
       before(function() {
-        fired = [];
-        jQuery(document).keybind({ 'a': fnA, 'b': fnB });
+        jQuery(document).keybind({ 'a': loggingCallback('fnA'),
+                                   'b': loggingCallback('fnB') });
       });
 
       it("attaches each seq->handler pair", function() {
-        triggerEvent('keydown', 66, 0);
-        triggerEvent('keypress', 66, 98);
-        triggerEvent('keydown', 65, 0);
-        triggerEvent('keypress', 65, 97);
-
-        expect(fired).to(equal, ['fnB', 'fnA']);
+        press('b');
+        press('a');
+        expect(loggedOrder()).to(equal, ['fnB', 'fnA']);
       });
     });
 
     describe("One key sequence, multiple bindings", function() {
-      var fired,
-          fnA = function() { fired.push('fnA'); },
-          fnB = function() { fired.push('fnB'); };
-
-      function pressA() {
-        triggerEvent('keydown', 65, 0);
-        triggerEvent('keypress', 65, 97);
-      }
+      var fn1 = loggingCallback('fn1'),
+          fn2 = loggingCallback('fn2');
 
       before(function() {
-        fired = [];
-        jQuery(document).keybind('a', fnA).keybind('a', fnB);
+        jQuery(document).keybind('a', fn1).keybind('a', fn2);
       });
 
       it("fires all bound handlers, in the order they were bound", function() {
-        pressA();
-        expect(fired).to(equal, ['fnA', 'fnB']);
+        press('a');
+        expect(loggedOrder()).to(equal, ['fn1', 'fn2']);
       });
 
       it("can unbind a single handler by function", function() {
-        jQuery(document).keyunbind('a', fnA);
-        pressA();
+        jQuery(document).keyunbind('a', fn1);
 
-        expect(fired).to(equal, ['fnB']);
+        press('a');
+        expect(loggedOrder()).to(equal, ['fn2']);
       });
 
       it("can unbind all handlers at once", function() {
         jQuery(document).keyunbind('a');
-        pressA();
 
-        expect(fired).to(equal, []);
+        press('a');
+        expect(loggedOrder()).to(equal, []);
       });
     });
 
     describe("Cancelling events", function() {
-      var event,
-          returnTrue  = function(k, e) { event = e; return true; },
-          returnFalse = function(k, e) { event = e; return false; };
-
       it("is done by returning false from a handler", function() {
         jQuery(document).keybind('a', returnFalse);
-        triggerEvent('keydown', 65, 0);
-        triggerEvent('keypress', 65, 97);
 
-        expect(event.isDefaultPrevented()).to(be_true);
-        expect(event.isPropagationStopped()).to(be_true);
+        press('a');
+        expect(loggedEvent().isDefaultPrevented()).to(be_true);
+        expect(loggedEvent().isPropagationStopped()).to(be_true);
       });
 
       it("is done even if one of two handlers returns true", function() {
         jQuery(document).keybind('a', returnFalse).keybind('a', returnTrue);
-        triggerEvent('keydown', 65, 0);
-        triggerEvent('keypress', 65, 97);
 
-        expect(event.isDefaultPrevented()).to(be_true);
-        expect(event.isPropagationStopped()).to(be_true);
+        press('a');
+        expect(loggedEvent().isDefaultPrevented()).to(be_true);
+        expect(loggedEvent().isPropagationStopped()).to(be_true);
       });
 
       it("is not done if no handler returns false", function() {
         jQuery(document).keybind('a', returnTrue);
-        triggerEvent('keydown', 65, 0);
-        triggerEvent('keypress', 65, 97);
 
-        expect(event.isDefaultPrevented()).to(be_false);
-        expect(event.isPropagationStopped()).to(be_false);
+        press('a');
+        expect(loggedEvent().isDefaultPrevented()).to(be_false);
+        expect(loggedEvent().isPropagationStopped()).to(be_false);
       });
     });
 
     describe('keyunbindAll', function() {
       it("removes the data attached to the element", function() {
-        jQuery(document).keybind('a', function() {});
+        jQuery(document).keybind('a', returnTrue);
         expect(jQuery(document).data('keybind')).to_not(be_null);
 
         jQuery(document).keyunbindAll();
         expect(jQuery(document).data('keybind')).to(be_null);
       });
 
-      it("unbinds the internal event listeners from the element", function() {
-        jQuery(document).keybind('a', function() {});
-        expect(jQuery(document).data('events')).to_not(be_null);
-        // ^-- shady? relies on me knowing the guts of jQuery and how
-        // it stores its knowledge of dom listeners.
+      it("unbinds bound bindings", function() { // english is fun
+        jQuery(document).keybind('a', returnTrue);
+        press('a');
+        expect(loggedCount()).to(equal, 1);
 
         jQuery(document).keyunbindAll();
-        expect(jQuery(document).data('events')).to(be_null);
+        press('a');
+        expect(loggedCount()).to(equal, 1);
       });
     });
 
     describe('portability', function() {
       describe('Lowercase characters', function() {
-        var key, event, count;
-
         before(function() {
-          count = 0;
-          jQuery(document).keybind('a', function(k, e) {
-            key = k;
-            event = e;
-            count++;
-          });
+          jQuery(document).keybind('a', loggingCallback('a'));
         });
 
         it("supports WebKit", function() {
           triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041' });
           triggerEvent('keypress', 65, 97);
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'a');
         });
 
         it("supports Gecko", function() {
           triggerEvent('keydown', 65, 0);
           triggerEvent('keypress', 0, 97);
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'a');
         });
 
         it("supports IE", function() {
           triggerEvent('keydown', 65, 0);
           triggerEvent('keypress', 97, 0);
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'a');
         });
       });
 
       describe('Modifiers on lowercase characters', function() {
-        var key, event, count;
-
         before(function() {
-          count = 0;
-
-          jQuery(document).keybind('C-a', function(k, e) {
-            key = k;
-            event = e;
-            count++;
-          });
-
-          jQuery(document).keybind('A-a', function(k, e) {
-            key = k;
-            event = e;
-            count++;
-          });
-
-          jQuery(document).keybind('M-a', function(k, e) {
-            key = k;
-            event = e;
-            count++;
-          });
+          jQuery(document).keybind('C-a', loggingCallback('C-a'));
+          jQuery(document).keybind('A-a', loggingCallback('A-a'));
+          jQuery(document).keybind('M-a', loggingCallback('M-a'));
 
           // eh? i need S-Left, but not S-a, which is A. so ...
-          jQuery(document).keybind('S-a', function(k, e) {
-            key = k;
-            event = e;
-            count++;
-          });
+          jQuery(document).keybind('S-a', loggingCallback('S-a'));
         });
 
         it("supports WebKit", function() {
@@ -188,26 +164,26 @@ Screw.Unit(function() {
           triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
                                            ctrlKey: true });
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'C-a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-a');
 
-          count = 0;
+          cbLogger.reset();
           triggerEvent('keydown', 18, 0, { keyIdentifier: 'Alt' });
           triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
                                            altKey: true });
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'A-a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'A-a');
 
-          count = 0;
+          cbLogger.reset();
           triggerEvent('keydown', 91, 0, { keyIdentifier: 'Meta',
                                            metaKey: true });
           triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
                                            metaKey: true });
           triggerEvent('keypress', 97, 97, { metaKey: true }); // Only in safari, not chrome
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'M-a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'M-a');
         });
 
         it("supports WebKit on OSX oddities", function() {
@@ -217,8 +193,8 @@ Screw.Unit(function() {
                                            ctrlKey: true });
           triggerEvent('keypress', 1, 1, { keyIdentifier: 'U+0041',
                                            ctrlKey: true });
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'C-a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-a');
         });
 
         it("supports Gecko", function() {
@@ -226,24 +202,24 @@ Screw.Unit(function() {
           triggerEvent('keydown', 65, 0, { ctrlKey: true });
           triggerEvent('keypress', 0, 97, { ctrlKey: true });
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'C-a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-a');
 
-          count = 0;
+          cbLogger.reset();
           triggerEvent('keydown', 18, 0);
           triggerEvent('keydown', 65, 0, { altKey: true });
           triggerEvent('keypress', 0, 97, { altKey: true });
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'A-a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'A-a');
 
-          count = 0;
+          cbLogger.reset();
           triggerEvent('keydown', 224, 0, { metaKey: true });
           triggerEvent('keydown', 65, 0, { metaKey: true });
           triggerEvent('keypress', 97, 97, { metaKey: true });
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'M-a');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'M-a');
         });
 
         it("supports IE", function() {
@@ -252,15 +228,8 @@ Screw.Unit(function() {
       });
 
       describe('Uppercase characters', function() {
-        var key, event, count;
-
         before(function() {
-          count = 0;
-          jQuery(document).keybind('A', function(k, e) {
-            key = k;
-            event = e;
-            count++;
-          });
+          jQuery(document).keybind('A', loggingCallback('A'));
         });
 
         it("supports WebKit", function() {
@@ -269,8 +238,8 @@ Screw.Unit(function() {
                                            shiftKey: true });
           triggerEvent('keypress', 65, 65, { shiftKey: true });
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'A');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'A');
         });
 
         it("supports Gecko", function() {
@@ -278,8 +247,8 @@ Screw.Unit(function() {
           triggerEvent('keydown', 65, 0, { shiftKey: true });
           triggerEvent('keypress', 0, 65, { shiftKey: true });
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'A');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'A');
         });
 
         it("supports IE", function() {
@@ -287,120 +256,104 @@ Screw.Unit(function() {
           triggerEvent('keydown', 65, 0, { shiftKey: true });
           triggerEvent('keypress', 65, 0, { shiftKey: true });
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'A');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'A');
         });
       });
 
       describe('Enter', function() {
-        var key, event, count;
-
         before(function() {
-          count = 0;
-          jQuery(document).keybind('Enter', function(k, e) {
-            key = k;
-            event = e;
-            count++;
-          });
+          jQuery(document).keybind('Enter', loggingCallback('Enter'));
         });
 
         it("supports WebKit", function() {
           triggerEvent('keydown', 13, 0, { keyIdentifier: 'Enter' });
           triggerEvent('keypress', 13, 13, { keyIdentifier: 'Enter' });
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'Enter');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'Enter');
         });
 
         it("supports Gecko and IE", function() {
           triggerEvent('keydown', 13, 0);
           triggerEvent('keypress', 13, 0);
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'Enter');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'Enter');
         });
       });
 
       describe('Esc', function() {
-        var key, event, count;
-
         before(function() {
-          count = 0;
-          jQuery(document).keybind('Esc', function(k, e) {
-            key = k;
-            event = e;
-            count++;
-          });
+          jQuery(document).keybind('Esc', loggingCallback('Esc'));
         });
 
         it("supports WebKit", function() {
           triggerEvent('keydown', 27, 0);
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'Esc');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'Esc');
         });
 
         it("supports Gecko and IE", function() {
           triggerEvent('keydown', 27, 0);
           triggerEvent('keypress', 27, 0);
 
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'Esc');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'Esc');
         });
       });
 
       describe('Arrow keys', function() {
-        var key, event, count,
-            handler = function(k, e) {
-              count++;
-              key = k;
-              event = e;
-            };
-
         before(function() {
-          count = 0;
-          key = event = null;
-          jQuery(document).keybind('Left', handler);
+          jQuery(document).keybind('Left', loggingCallback('Left'));
         });
 
         it("supports WebKit", function() {
           triggerEvent('keydown', 37, 0, { keyIdentifier: 'Left' });
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'Left');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'Left');
         });
 
         it("supports Gecko", function() {
           triggerEvent('keydown', 37, 0);
           triggerEvent('keypress', 37, 0);
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'Left');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'Left');
         });
 
         it("supports IE", function() {
           triggerEvent('keydown', 37, 0);
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, 'Left');
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'Left');
         });
 
         it("does not confuse arrow keys with punctuation", function() {
-          jQuery(document).keybind('%', function(k, e) {
-            count++;
-            key = k;
-            event = e;
-          });
+          jQuery(document).keybind('%', loggingCallback('%'));
 
           // a la WebKit
           triggerEvent('keydown', 16, 0, { keyIdentifier: 'Shift' });
           triggerEvent('keydown', 53, 0, { keyIdentifier: 'U+0035',
                                            shiftKey: true });
           triggerEvent('keypress', 37, 37, { shiftKey: true });
-          expect(count).to(equal, 1);
-          expect(key.chord).to(equal, '%');
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '%');
         });
       });
 
     });
   });
+
+  function press(singleChar) {
+    var keyCode  = singleChar.toUpperCase().charCodeAt(0),
+        charCode = singleChar.charCodeAt(0);
+
+    // Makes it look like Gecko. This isn't meant to be used when
+    // testing portability.
+    triggerEvent('keydown', keyCode, 0);
+    triggerEvent('keypress', 0, charCode);
+  }
 
   function triggerEvent(type, keyCode, charCode, props) {
     var event = mockEvent(type, keyCode, charCode, props);
@@ -430,5 +383,23 @@ Screw.Unit(function() {
     // keyIdentifier. Make sure the tests exercise realistic cases.
     return jQuery.event.fix($.extend(event, props));
   }
+
+  var CallbackLogger = function() {
+    this.reset();
+  };
+
+  CallbackLogger.prototype.reset = function() {
+    this.order = [];
+    this.key   = null;
+    this.event = null;
+    this.count = 0;
+  };
+
+  CallbackLogger.prototype.log = function(name, key, event) {
+    this.order.push(name);
+    this.key   = key;
+    this.event = event;
+    this.count += 1;
+  };
 
 });

@@ -60,6 +60,39 @@ Screw.Unit(function() {
       });
     });
 
+    describe("Cancelling events", function() {
+      var event,
+          returnTrue  = function(k, e) { event = e; return true; },
+          returnFalse = function(k, e) { event = e; return false; };
+
+      it("is done by returning false from a handler", function() {
+        jQuery(document).keybind('a', returnFalse);
+        triggerEvent('keydown', 65, 0);
+        triggerEvent('keypress', 65, 97);
+
+        expect(event.isDefaultPrevented()).to(be_true);
+        expect(event.isPropagationStopped()).to(be_true);
+      });
+
+      it("is done even if one of two handlers returns true", function() {
+        jQuery(document).keybind('a', returnFalse).keybind('a', returnTrue);
+        triggerEvent('keydown', 65, 0);
+        triggerEvent('keypress', 65, 97);
+
+        expect(event.isDefaultPrevented()).to(be_true);
+        expect(event.isPropagationStopped()).to(be_true);
+      });
+
+      it("is not done if no handler returns false", function() {
+        jQuery(document).keybind('a', returnTrue);
+        triggerEvent('keydown', 65, 0);
+        triggerEvent('keypress', 65, 97);
+
+        expect(event.isDefaultPrevented()).to(be_false);
+        expect(event.isPropagationStopped()).to(be_false);
+      });
+    });
+
     describe('keyunbindAll', function() {
       it("removes the data attached to the element", function() {
         jQuery(document).keybind('a', function() {});

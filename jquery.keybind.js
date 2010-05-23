@@ -45,13 +45,14 @@
 
   function keypressHandler(event) {
     var data = $(this).data('keybind'),
-        key  = { chord: eventChord(event) };
+        key  = { chord: eventChord(event) },
+        retVal = true;
 
     if ((event.charCode >= 37 && event.charCode <= 40) ||
         !shouldTriggerOnKeydown(event))
-      triggerHandlers(data.bindings, key, event);
+      retVal = triggerHandlers(data.bindings, key, event);
 
-    return false;
+    return retVal;
   }
 
   function keydownHandler(event) {
@@ -61,8 +62,8 @@
     var data = $(this).data('keybind'),
         key  = { chord: eventChord(event) };
 
-    triggerHandlers(data.bindings, key, event);
-    return false;
+    retVal = triggerHandlers(data.bindings, key, event);
+    return retVal;
   }
 
   function keyupHandler(event) {
@@ -84,9 +85,17 @@
   }
 
   function triggerHandlers(bindings, key, event) {
-    var handlers = bindings[key.chord];
-    if (handlers !== undefined)
-      $.each(handlers, function(i, fn) { fn(key, event); });
+    var handlers = bindings[key.chord],
+        retVal   = true;
+
+    if (handlers !== undefined) {
+      $.each(handlers, function(i, fn) {
+        if (fn(key, event) === false)
+          retVal = false;
+      });
+    }
+
+    return retVal;
   }
 
   function shouldTriggerOnKeydown(event) {

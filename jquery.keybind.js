@@ -100,29 +100,38 @@
         mods = '',
         name;
 
-    if (event.ctrlKey) {
-      mods += 'C-';
-      desc.modified = desc.ctrl = true;
-    }
-    if (event.altKey) {
-      mods += 'A-';
-      desc.modified = desc.alt = true;
-    }
-    if (event.originalEvent.metaKey) {
-      mods += 'M-';
-      desc.modified = desc.meta = true;
-    }
+    if (event.ctrlKey)
+      desc.ctrl = true;
+    if (event.altKey)
+      desc.alt = true;
+    if (event.originalEvent.metaKey)
+      desc.meta = true;
+
+    desc.modified = desc.ctrl || desc.alt || desc.meta;
+    desc.chord = keyName(desc, event);
+
+    return desc;
+  }
+
+  function keyName(desc, event) {
+    var name, mods = '';
+
+    if (desc.ctrl) mods += 'C-';
+    if (desc.alt)  mods += 'A-';
+    if (desc.meta) mods += 'M-';
 
     if (event.type === 'keydown') {
-      name = _specialKeys[event.keyCode] || String.fromCharCode(event.keyCode).toLowerCase();
+      name = _specialKeys[event.keyCode];
+      if (name === undefined)
+        name = String.fromCharCode(event.keyCode).toLowerCase();
+
     } else if (event.type === 'keypress') {
       name = String.fromCharCode(event.charCode || event.keyCode);
+
     } else
       throw("could prolly support keyup but explicitly don't right now");
 
-    desc.chord = mods + name;
-
-    return desc;
+    return mods + name;
   }
 
   var _specialKeys = {

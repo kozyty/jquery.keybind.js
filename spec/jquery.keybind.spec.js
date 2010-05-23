@@ -208,6 +208,7 @@ Screw.Unit(function() {
           expect(count).to(equal, 1);
           expect(key.chord).to(equal, 'C-a');
 
+          count = 0;
           triggerEvent('keydown', 18, 0);
           triggerEvent('keydown', 65, 0, { altKey: true });
           triggerEvent('keypress', 0, 97, { altKey: true });

@@ -45,7 +45,7 @@
 
   function keypressHandler(event) {
     var data = $(this).data('keybind'),
-        key  = { chord: eventChord(event) },
+        key  = keyDescription(event),
         retVal = true;
 
     if ((event.charCode >= 37 && event.charCode <= 40) ||
@@ -60,7 +60,7 @@
       return;
 
     var data = $(this).data('keybind'),
-        key  = { chord: eventChord(event) };
+        key  = keyDescription(event);
 
     return triggerHandlers(data.bindings, key, event);
   }
@@ -76,11 +76,23 @@
       bindings[seq] = [handler];
   }
 
-  function eventChord(event) {
-    if (event.type === 'keypress')
-      return String.fromCharCode(event.charCode || event.keyCode);
-    else
-      return _specialKeys[event.keyCode];
+  function keyDescription(event) {
+    var mods = '',
+        key;
+
+    if (event.ctrlKey)
+      mods += 'C-';
+    if (event.altKey)
+      mods += 'A-';
+
+    if (event.type === 'keydown') {
+      key = _specialKeys[event.keyCode] || String.fromCharCode(event.keyCode).toLowerCase();
+    } else if (event.type === 'keypress') {
+      key = String.fromCharCode(event.charCode || event.keyCode);
+    } else
+      throw("could prolly support keyup but i don't atm");
+
+    return { chord: mods + key };
   }
 
   function triggerHandlers(bindings, key, event) {
@@ -99,7 +111,7 @@
   }
 
   function shouldTriggerOnKeydown(event) {
-    return event.keyCode in _specialKeys;
+    return event.keyCode in _specialKeys || event.ctrlKey || event.altKey;
   }
 
   var _specialKeys = {

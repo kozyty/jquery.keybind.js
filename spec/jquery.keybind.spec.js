@@ -198,6 +198,27 @@ Screw.Unit(function() {
 
           expect(count).to(equal, 1);
           expect(key.chord).to(equal, 'A-a');
+
+          count = 0;
+          triggerEvent('keydown', 91, 0, { keyIdentifier: 'Meta',
+                                           metaKey: true });
+          triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
+                                           metaKey: true });
+          triggerEvent('keypress', 97, 97, { metaKey: true }); // Only in safari, not chrome
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'M-a');
+        });
+
+        it("supports WebKit on OSX oddities", function() {
+          // I get a meaningless keypress event on Safari WebKit 530.17 and Chrome WebKit 533.4
+          triggerEvent('keydown', 17, 0, { keyIdentifier: 'Control' });
+          triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
+                                           ctrlKey: true });
+          triggerEvent('keypress', 1, 1, { keyIdentifier: 'U+0041',
+                                           ctrlKey: true });
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'C-a');
         });
 
         it("supports Gecko", function() {
@@ -215,6 +236,14 @@ Screw.Unit(function() {
 
           expect(count).to(equal, 1);
           expect(key.chord).to(equal, 'A-a');
+
+          count = 0;
+          triggerEvent('keydown', 224, 0, { metaKey: true });
+          triggerEvent('keydown', 65, 0, { metaKey: true });
+          triggerEvent('keypress', 97, 97, { metaKey: true });
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'M-a');
         });
 
         it("supports IE", function() {

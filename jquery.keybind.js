@@ -84,6 +84,8 @@
       mods += 'C-';
     if (event.altKey)
       mods += 'A-';
+    if (event.originalEvent.metaKey)
+      mods += 'M-';
 
     if (event.type === 'keydown') {
       key = _specialKeys[event.keyCode] || String.fromCharCode(event.keyCode).toLowerCase();
@@ -111,7 +113,8 @@
   }
 
   function shouldTriggerOnKeydown(event) {
-    return event.keyCode in _specialKeys || event.ctrlKey || event.altKey;
+    var modified = event.ctrlKey || event.altKey || event.originalEvent.metaKey;
+    return modified || event.keyCode in _specialKeys;
   }
 
   var _specialKeys = {

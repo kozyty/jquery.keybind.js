@@ -62,8 +62,7 @@
     var data = $(this).data('keybind'),
         key  = { chord: eventChord(event) };
 
-    retVal = triggerHandlers(data.bindings, key, event);
-    return retVal;
+    return triggerHandlers(data.bindings, key, event);
   }
 
   function keyupHandler(event) {
@@ -88,12 +87,13 @@
     var handlers = bindings[key.chord],
         retVal   = true;
 
-    if (handlers !== undefined) {
-      $.each(handlers, function(i, fn) {
-        if (fn(key, event) === false)
-          retVal = false;
-      });
-    }
+    if (handlers === undefined)
+      return retVal;
+
+    $.each(handlers, function(i, fn) {
+      if (fn(key, event) === false)
+        retVal = false;
+    });
 
     return retVal;
   }

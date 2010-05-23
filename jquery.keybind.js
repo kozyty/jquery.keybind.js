@@ -98,7 +98,7 @@
   function keyDescription(event) {
     var desc = {},
         mods = '',
-        key;
+        name;
 
     if (event.ctrlKey) {
       mods += 'C-';
@@ -114,13 +114,13 @@
     }
 
     if (event.type === 'keydown') {
-      key = _specialKeys[event.keyCode] || String.fromCharCode(event.keyCode).toLowerCase();
+      name = _specialKeys[event.keyCode] || String.fromCharCode(event.keyCode).toLowerCase();
     } else if (event.type === 'keypress') {
-      key = String.fromCharCode(event.charCode || event.keyCode);
+      name = String.fromCharCode(event.charCode || event.keyCode);
     } else
-      throw("could prolly support keyup but i don't atm");
+      throw("could prolly support keyup but explicitly don't right now");
 
-    desc.chord = mods + key;
+    desc.chord = mods + name;
 
     return desc;
   }

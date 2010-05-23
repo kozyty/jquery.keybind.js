@@ -151,6 +151,76 @@ Screw.Unit(function() {
         });
       });
 
+      describe('Modifiers on lowercase characters', function() {
+        var key, event, count;
+
+        before(function() {
+          count = 0;
+
+          jQuery(document).keybind('C-a', function(k, e) {
+            key = k;
+            event = e;
+            count++;
+          });
+
+          jQuery(document).keybind('A-a', function(k, e) {
+            key = k;
+            event = e;
+            count++;
+          });
+
+          jQuery(document).keybind('M-a', function(k, e) {
+            key = k;
+            event = e;
+            count++;
+          });
+
+          // eh? i need S-Left, but not S-a, which is A. so ...
+          jQuery(document).keybind('S-a', function(k, e) {
+            key = k;
+            event = e;
+            count++;
+          });
+        });
+
+        it("supports WebKit", function() {
+          triggerEvent('keydown', 17, 0, { keyIdentifier: 'Control' });
+          triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
+                                           ctrlKey: true });
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'C-a');
+
+          count = 0;
+          triggerEvent('keydown', 18, 0, { keyIdentifier: 'Alt' });
+          triggerEvent('keydown', 65, 0, { keyIdentifier: 'U+0041',
+                                           altKey: true });
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'A-a');
+        });
+
+        it("supports Gecko", function() {
+          triggerEvent('keydown', 17, 0);
+          triggerEvent('keydown', 65, 0, { ctrlKey: true });
+          triggerEvent('keypress', 0, 97, { ctrlKey: true });
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'C-a');
+
+          triggerEvent('keydown', 18, 0);
+          triggerEvent('keydown', 65, 0, { altKey: true });
+          triggerEvent('keypress', 0, 97, { altKey: true });
+
+          expect(count).to(equal, 1);
+          expect(key.chord).to(equal, 'A-a');
+        });
+
+        it("supports IE", function() {
+          expect('not failing').to(equal, 'implement me please');
+        });
+      });
+
       describe('Uppercase characters', function() {
         var key, event, count;
 

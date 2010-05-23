@@ -290,7 +290,7 @@ Screw.Unit(function() {
           });
 
           // a la WebKit
-          triggerEvent('keydown', 16, 0);
+          triggerEvent('keydown', 16, 0, { keyIdentifier: 'Shift' });
           triggerEvent('keydown', 53, 0, { keyIdentifier: 'U+0035',
                                            shiftKey: true });
           triggerEvent('keypress', 37, 37, { shiftKey: true });

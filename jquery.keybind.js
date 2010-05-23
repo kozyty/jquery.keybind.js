@@ -45,24 +45,24 @@
 
   function keypressHandler(event) {
     var data = $(this).data('keybind'),
-        key  = keyDescription(event),
+        desc = keyDescription(event),
         retVal = true;
 
     if ((event.charCode >= 37 && event.charCode <= 40) ||
-        !shouldTriggerOnKeydown(event))
-      retVal = triggerHandlers(data.bindings, key, event);
+        !shouldTriggerOnKeydown(desc, event))
+      retVal = triggerHandlers(data.bindings, desc, event);
 
     return retVal;
   }
 
   function keydownHandler(event) {
-    if (!shouldTriggerOnKeydown(event))
+    var data = $(this).data('keybind'),
+        desc = keyDescription(event);
+
+    if (!shouldTriggerOnKeydown(desc, event))
       return;
 
-    var data = $(this).data('keybind'),
-        key  = keyDescription(event);
-
-    return triggerHandlers(data.bindings, key, event);
+    return triggerHandlers(data.bindings, desc, event);
   }
 
   function keyupHandler(event) {
@@ -76,16 +76,42 @@
       bindings[seq] = [handler];
   }
 
+  function triggerHandlers(bindings, desc, event) {
+    var handlers = bindings[desc.chord],
+        retVal   = true;
+
+    if (handlers === undefined)
+      return retVal;
+
+    $.each(handlers, function(i, fn) {
+      if (fn(desc, event) === false)
+        retVal = false;
+    });
+
+    return retVal;
+  }
+
+  function shouldTriggerOnKeydown(desc, event) {
+    return desc.modified || event.keyCode in _specialKeys;
+  }
+
   function keyDescription(event) {
-    var mods = '',
+    var desc = {},
+        mods = '',
         key;
 
-    if (event.ctrlKey)
+    if (event.ctrlKey) {
       mods += 'C-';
-    if (event.altKey)
+      desc.modified = desc.ctrl = true;
+    }
+    if (event.altKey) {
       mods += 'A-';
-    if (event.originalEvent.metaKey)
+      desc.modified = desc.alt = true;
+    }
+    if (event.originalEvent.metaKey) {
       mods += 'M-';
+      desc.modified = desc.meta = true;
+    }
 
     if (event.type === 'keydown') {
       key = _specialKeys[event.keyCode] || String.fromCharCode(event.keyCode).toLowerCase();
@@ -94,27 +120,9 @@
     } else
       throw("could prolly support keyup but i don't atm");
 
-    return { chord: mods + key };
-  }
+    desc.chord = mods + key;
 
-  function triggerHandlers(bindings, key, event) {
-    var handlers = bindings[key.chord],
-        retVal   = true;
-
-    if (handlers === undefined)
-      return retVal;
-
-    $.each(handlers, function(i, fn) {
-      if (fn(key, event) === false)
-        retVal = false;
-    });
-
-    return retVal;
-  }
-
-  function shouldTriggerOnKeydown(event) {
-    var modified = event.ctrlKey || event.altKey || event.originalEvent.metaKey;
-    return modified || event.keyCode in _specialKeys;
+    return desc;
   }
 
   var _specialKeys = {

@@ -125,8 +125,8 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          keydown(65, 0);
-          keypress(97, 0);
+          keydown(65, undefined);
+          keypress(97, undefined);
 
           expect(loggedCount()).to(equal, 1);
           expect(loggedKeyName()).to(equal, 'a');
@@ -158,9 +158,9 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          keydown(16, 0);
-          keydown(65, 0, { shiftKey: true });
-          keypress(65, 0, { shiftKey: true });
+          keydown(16, undefined, { shiftKey: true });
+          keydown(65, undefined, { shiftKey: true });
+          keypress(65, undefined, { shiftKey: true });
 
           expect(loggedCount()).to(equal, 1);
           expect(loggedKeyName()).to(equal, 'A');
@@ -202,7 +202,11 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          expect("fail").to(equal, "add IE support");
+          keydown(17, undefined, { ctrlKey: true });
+          keydown(65, undefined, { ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-a');
         });
       });
 
@@ -230,7 +234,11 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          expect("fail").to(equal, "add IE support");
+          keydown(18, undefined, { altKey: true });
+          keydown(65, undefined, { altKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'A-a');
         });
       });
 
@@ -259,8 +267,8 @@ Screw.Unit(function() {
           expect(loggedKeyName()).to(equal, 'M-a');
         });
 
-        it("supports IE", function() {
-          expect("fail").to(equal, "add IE support");
+        it("can not work in IE, as it does not support metaKey", function() {
+          expect(true).to(be_true);
         });
       });
 
@@ -293,7 +301,13 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          expect("fail").to(equal, "add IE support");
+          keydown(17, undefined, { ctrlKey: true });
+          keydown(16, undefined, { ctrlKey: true, shiftKey: true });
+          keydown(65, undefined, { ctrlKey: true, shiftKey: true });
+          keypress(1, undefined, { ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-S-a');
         });
       });
 
@@ -365,7 +379,12 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          expect('fail').to(equal, 'add IE support');
+          keydown(16, undefined, { shiftKey: true });
+          keydown(53, undefined, { shiftKey: true });
+          keypress(37, undefined, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '%');
         });
       });
 
@@ -396,7 +415,12 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          expect('fail').to(equal, 'add IE support');
+          keydown(17, undefined, { ctrlKey: true });
+          keydown(16, undefined, { ctrlKey: true, shiftKey: true });
+          keydown(53, undefined, { ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-%');
         });
       });
 
@@ -434,7 +458,7 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          keydown(37, 0);
+          keydown(37, undefined);
           expect(loggedCount()).to(equal, 1);
           expect(loggedKeyName()).to(equal, 'Left');
         });

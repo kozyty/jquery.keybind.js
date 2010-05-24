@@ -182,7 +182,6 @@ Screw.Unit(function() {
         });
 
         it("supports WebKit on OSX", function() {
-          // I get a meaningless keypress event on Safari WebKit 530.17 and Chrome WebKit 533.4
           keydown(17, 0, { keyIdentifier: 'Control' });
           keydown(65, 0, { keyIdentifier: 'U+0041',
                            ctrlKey: true });
@@ -489,12 +488,139 @@ Screw.Unit(function() {
       });
 
       describe('C--', function() {
+        before(function() {
+          jQuery(document).keybind('C--', loggingCallback('C--'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(17, 0, { keyIdentifier: 'Control' });
+          keydown(189, 0, { keyIdentifier: 'U+00BD',
+                            ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C--');
+        });
+
+        it("supports Gecko", function() {
+          keydown(17, 0);
+          keydown(109, 0, { ctrlKey: true });
+          keypress(0, 45, { ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C--');
+        });
+
+        it("supports IE", function() {
+          keydown(17, undefined, { ctrlKey: true });
+          keydown(189, undefined, { ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C--');
+        });
       });
 
       describe('C-_', function() {
+        before(function() {
+          jQuery(document).keybind('C-_', loggingCallback('C-_'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(16, 0, { keyIdentifier: 'Shift' });
+          keydown(17, 0, { keyIdentifier: 'Control',
+                           shiftKey: true });
+          keypress(189, 0, { keyIdentifier: 'U+00BD',
+                             ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-_');
+        });
+
+        it("supports Gecko", function() {
+          keydown(17, 0);
+          keydown(16, 0, { ctrlKey: true });
+          keydown(109, 0, { ctrlKey: true, shiftKey: true });
+          keypress(0, 95, { ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-_');
+        });
+
+        it("supports IE", function() {
+          keydown(17, undefined, { ctrlKey: true });
+          keydown(16, undefined, { ctrlKey: true, shiftKey: true });
+          keydown(189, undefined, { ctrlKey: true, shiftKey: true });
+          keypress(31, undefined, { ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-_');
+        });
       });
 
-      describe('M-_', function() {
+      describe('=', function() {
+        before(function() {
+          jQuery(document).keybind('=', loggingCallback('='));
+        });
+
+        it("supports WebKit", function() {
+          keydown(187, 0, { keyIdentifier: 'U+00BB' });
+          keypress(61, 61);
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '=');
+        });
+
+        it("supports Gecko", function() {
+          keydown(61, 0);
+          keypress(0, 61);
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '=');
+        });
+
+        it("supports IE", function() {
+          keydown(187, undefined);
+          keydown(61, undefined);
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '=');
+        });
+      });
+
+      describe('C-=', function() {
+        before(function() {
+          jQuery(document).keybind('C-=', loggingCallback('C-='));
+        });
+
+        it("supports WebKit", function() {
+          keydown(17, 0, { keyIdentifier: 'Control' });
+          keydown(187, 0, { keyIdentifier: 'U+00BB', ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-=');
+        });
+
+        it("supports Gecko", function() {
+          keydown(17, 0);
+          keydown(61, 0, { ctrlKey: true });
+          keypress(0, 61, { ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-=');
+        });
+
+        it("supports IE", function() {
+          keydown(17, undefined, { ctrlKey: true });
+          keydown(187, undefined, { ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-=');
+        });
+      });
+
+      describe('+', function() {
+      });
+
+      describe('C-+', function() {
       });
 
       describe('Left', function() {

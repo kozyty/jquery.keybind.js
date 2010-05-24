@@ -267,7 +267,7 @@ Screw.Unit(function() {
           expect(loggedKeyName()).to(equal, 'M-a');
         });
 
-        it("can not work in IE, as it does not support metaKey", function() {
+        it("can not support IE, which does not support metaKey", function() {
           expect(true).to(be_true);
         });
       });

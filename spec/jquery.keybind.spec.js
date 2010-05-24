@@ -426,9 +426,66 @@ Screw.Unit(function() {
       });
 
       describe('-', function() {
+        before(function() {
+          jQuery(document).keybind('-', loggingCallback('-'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(189, 0, { keyIdentifier: 'U+00BD' });
+          keypress(45, 45);
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '-');
+        });
+
+        it("supports Gecko", function() {
+          keydown(109, 0);
+          keypress(0, 45);
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '-');
+        });
+
+        it("supports IE", function() {
+          keydown(189, undefined);
+          keypress(45, undefined);
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '-');
+        });
       });
 
       describe('_', function() {
+        before(function() {
+          jQuery(document).keybind('_', loggingCallback('_'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(16, 0, { keyIdentifier: 'Shift' });
+          keydown(189, 0, { keyIdentifier: 'U+00BD', shiftKey: true });
+          keypress(95, 95, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '_');
+        });
+
+        it("supports Gecko", function() {
+          keydown(16, 0);
+          keydown(109, 0, { shiftKey: true });
+          keypress(0, 95, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '_');
+        });
+
+        it("supports IE", function() {
+          keydown(16, undefined, { shiftKey: true });
+          keydown(189, undefined, { shiftKey: true });
+          keypress(95, undefined, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '_');
+        });
       });
 
       describe('C--', function() {

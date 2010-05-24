@@ -41,14 +41,12 @@
 
   function keypressHandler(event) {
     var data = $(this).data('keybind'),
-        desc = keyDescription(event),
-        retVal = true;
+        desc = keyDescription(event);
 
-    if ((event.charCode >= 37 && event.charCode <= 40) ||
-        !shouldTriggerOnKeydown(desc, event))
-      retVal = triggerHandlers(data.bindings, desc, event);
+    if (shouldTriggerOnKeydown(desc, event))
+      return true;
 
-    return retVal;
+    return triggerHandlers(data.bindings, desc, event);
   }
 
   function keydownHandler(event) {
@@ -56,7 +54,7 @@
         desc = keyDescription(event);
 
     if (!shouldTriggerOnKeydown(desc, event))
-      return;
+      return true;
 
     return triggerHandlers(data.bindings, desc, event);
   }
@@ -85,7 +83,16 @@
   }
 
   function shouldTriggerOnKeydown(desc, event) {
-    return desc.ctrl || desc.meta || desc.alt || event.keyCode in _specialKeys;
+    if (desc.ctrl || desc.meta || desc.alt)
+      return true;
+
+    if (event.charCode >= 37 && event.charCode <= 40)
+      return false;
+
+    if (event.keyCode in _specialKeys)
+      return true;
+
+    return false;
   }
 
   function keyDescription(event) {
@@ -116,11 +123,17 @@
     if (desc.meta) mods += 'M-';
 
     if (event.type === 'keydown') {
-      if (desc.shift) mods += 'S-';
+      if (event.keyCode >= 65 && event.keyCode <= 97 && desc.shift)
+        mods += 'S-';
 
       name = _specialKeys[event.keyCode];
-      if (name === undefined)
-        name = String.fromCharCode(event.keyCode).toLowerCase();
+      if (name === undefined) {
+        name = String.fromCharCode(event.keyCode);
+        if (event.keyCode >= 49 && event.keyCode <= 57)
+          name = _shiftedKeys[name];
+        else
+          name = name.toLowerCase();
+      }
 
     } else if (event.type === 'keypress') {
       name = String.fromCharCode(event.charCode || event.keyCode);
@@ -133,6 +146,11 @@
 
   var _specialKeys = {
     13: 'Enter', 27: 'Esc', 37: 'Left', 38: 'Up', 39: 'Right', 40: 'Down'
+  };
+
+  var _shiftedKeys = {
+    '1': '!', '2': '@', '3': '#', '4': '$', '5': '%',
+    '6': '^', '7': '&', '8': '*', '9': '(', '0': ')'
   };
 
 }(jQuery));

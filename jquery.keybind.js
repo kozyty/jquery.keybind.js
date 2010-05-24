@@ -1,15 +1,13 @@
 (function($) {
   $.fn.extend({
     keybind: function(seq, handler) {
-      var data = this.data('keybind'),
-          handlers;
+      var data = this.data('keybind');
 
       if (!data) {
         data = { bindings: {} };
         this.data('keybind', data)
             .bind({ keypress: keypressHandler,
-                    keydown:  keydownHandler,
-                    keyup:    keyupHandler });
+                    keydown:  keydownHandler });
       }
 
       if (typeof seq === "object")
@@ -21,8 +19,7 @@
     },
 
     keyunbind: function(seq, handler) {
-      var data = this.data('keybind'),
-          handlers = data.bindings[seq];
+      var data = this.data('keybind');
 
       if (handler !== undefined) {
         data.bindings[seq] = $.grep(data.bindings[seq], function(h) {
@@ -37,8 +34,7 @@
     keyunbindAll: function() {
       $(this).removeData('keybind')
              .unbind({ keypress: keypressHandler,
-                       keydown:  keydownHandler,
-                       keyup:    keyupHandler });
+                       keydown:  keydownHandler });
       return this;
     }
   });

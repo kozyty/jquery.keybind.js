@@ -133,6 +133,40 @@ Screw.Unit(function() {
         });
       });
 
+      describe('Uppercase characters', function() {
+        before(function() {
+          jQuery(document).keybind('A', loggingCallback('A'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(16, 0, { keyIdentifier: 'Shift' });
+          keydown(65, 0, { keyIdentifier: 'U+0041',
+                           shiftKey: true });
+          keypress(65, 65, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'A');
+        });
+
+        it("supports Gecko", function() {
+          keydown(16, 0);
+          keydown(65, 0, { shiftKey: true });
+          keypress(0, 65, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'A');
+        });
+
+        it("supports IE", function() {
+          keydown(16, 0);
+          keydown(65, 0, { shiftKey: true });
+          keypress(65, 0, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'A');
+        });
+      });
+
       describe('C-a', function() {
         before(function() {
           jQuery(document).keybind('C-a', loggingCallback('C-a'));
@@ -263,40 +297,6 @@ Screw.Unit(function() {
         });
       });
 
-      describe('Uppercase characters', function() {
-        before(function() {
-          jQuery(document).keybind('A', loggingCallback('A'));
-        });
-
-        it("supports WebKit", function() {
-          keydown(16, 0, { keyIdentifier: 'Shift' });
-          keydown(65, 0, { keyIdentifier: 'U+0041',
-                           shiftKey: true });
-          keypress(65, 65, { shiftKey: true });
-
-          expect(loggedCount()).to(equal, 1);
-          expect(loggedKeyName()).to(equal, 'A');
-        });
-
-        it("supports Gecko", function() {
-          keydown(16, 0);
-          keydown(65, 0, { shiftKey: true });
-          keypress(0, 65, { shiftKey: true });
-
-          expect(loggedCount()).to(equal, 1);
-          expect(loggedKeyName()).to(equal, 'A');
-        });
-
-        it("supports IE", function() {
-          keydown(16, 0);
-          keydown(65, 0, { shiftKey: true });
-          keypress(65, 0, { shiftKey: true });
-
-          expect(loggedCount()).to(equal, 1);
-          expect(loggedKeyName()).to(equal, 'A');
-        });
-      });
-
       describe('Enter', function() {
         before(function() {
           jQuery(document).keybind('Enter', loggingCallback('Enter'));
@@ -340,7 +340,36 @@ Screw.Unit(function() {
         });
       });
 
-      describe('Arrow keys', function() {
+      describe('%', function() {
+        before(function() {
+          jQuery(document).keybind('%', loggingCallback('%'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(16, 0, { keyIdentifier: 'Shift' });
+          keydown(53, 0, { keyIdentifier: 'U+0035',
+                           shiftKey: true });
+          keypress(37, 37, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '%');
+        });
+
+        it("supports Gecko", function() {
+          keydown(16, 0);
+          keydown(53, 0);
+          keypress(0, 37, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, '%');
+        });
+
+        it("supports IE", function() {
+          expect('fail').to(equal, 'add IE support');
+        });
+      });
+
+      describe('Left', function() {
         before(function() {
           jQuery(document).keybind('Left', loggingCallback('Left'));
         });
@@ -362,19 +391,6 @@ Screw.Unit(function() {
           keydown(37, 0);
           expect(loggedCount()).to(equal, 1);
           expect(loggedKeyName()).to(equal, 'Left');
-        });
-
-        it("does not confuse arrow keys with punctuation", function() {
-          jQuery(document).keybind('%', loggingCallback('%'));
-
-          // a la WebKit
-          keydown(16, 0, { keyIdentifier: 'Shift' });
-          keydown(53, 0, { keyIdentifier: 'U+0035',
-                           shiftKey: true });
-          keypress(37, 37, { shiftKey: true });
-
-          expect(loggedCount()).to(equal, 1);
-          expect(loggedKeyName()).to(equal, '%');
         });
       });
 

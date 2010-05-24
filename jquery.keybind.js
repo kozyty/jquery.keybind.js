@@ -86,7 +86,10 @@
     if (desc.ctrl || desc.meta || desc.alt)
       return true;
 
-    if (event.charCode >= 37 && event.charCode <= 40)
+    // % .. (, which look like arrow keys
+    if ((event.charCode >= 37 && event.charCode <= 40) ||
+        // same thing but on IE
+        (event.type === 'keypress' && event.keyCode >= 37 && event.keyCode <= 40))
       return false;
 
     if (event.keyCode in _specialKeys)

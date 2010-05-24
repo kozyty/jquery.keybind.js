@@ -354,6 +354,7 @@ Screw.Unit(function() {
         });
       });
 
+      // Chosen because it overlaps with the left arrow key
       describe('%', function() {
         before(function() {
           jQuery(document).keybind('%', loggingCallback('%'));

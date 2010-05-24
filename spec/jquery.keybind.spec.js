@@ -230,6 +230,39 @@ Screw.Unit(function() {
         });
       });
 
+      describe('C-S-a', function() {
+        before(function() {
+          jQuery(document).keybind('C-S-a', loggingCallback('C-S-a'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(16, 0, { keyIdentifier: 'Shift' });
+          keydown(17, 0, { keyIdentifier: 'Control',
+                           shiftKey: true });
+          keydown(65, 0, { keyIdentifier: 'U+0041',
+                           ctrlKey: true, shiftKey: true });
+          keypress(1, 1, { keyIdentifier: 'U+0041',
+                           ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-S-a');
+        });
+
+        it("supports Gecko", function() {
+          keydown(16, 0);
+          keydown(17, 0);
+          keydown(65, 0, { ctrlKey: true, shiftKey: true });
+          keypress(0, 65, { ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-S-a');
+        });
+
+        it("supports IE", function() {
+          expect("fail").to(equal, "add IE support");
+        });
+      });
+
       describe('Uppercase characters', function() {
         before(function() {
           jQuery(document).keybind('A', loggingCallback('A'));

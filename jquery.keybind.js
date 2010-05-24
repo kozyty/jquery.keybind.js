@@ -92,7 +92,7 @@
   }
 
   function shouldTriggerOnKeydown(desc, event) {
-    return desc.modified || event.keyCode in _specialKeys;
+    return desc.ctrl || desc.meta || desc.alt || event.keyCode in _specialKeys;
   }
 
   function keyDescription(event) {
@@ -106,8 +106,10 @@
       desc.alt = true;
     if (event.originalEvent.metaKey)
       desc.meta = true;
+    if (event.shiftKey)
+      desc.shift = true;
 
-    desc.modified = desc.ctrl || desc.alt || desc.meta;
+    desc.modified = desc.ctrl || desc.alt || desc.meta || desc.shift;
     desc.chord = keyName(desc, event);
 
     return desc;
@@ -121,6 +123,8 @@
     if (desc.meta) mods += 'M-';
 
     if (event.type === 'keydown') {
+      if (desc.shift) mods += 'S-';
+
       name = _specialKeys[event.keyCode];
       if (name === undefined)
         name = String.fromCharCode(event.keyCode).toLowerCase();

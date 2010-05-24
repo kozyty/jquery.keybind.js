@@ -400,6 +400,21 @@ Screw.Unit(function() {
         });
       });
 
+      describe('-', function() {
+      });
+
+      describe('_', function() {
+      });
+
+      describe('C--', function() {
+      });
+
+      describe('C-_', function() {
+      });
+
+      describe('M-_', function() {
+      });
+
       describe('Left', function() {
         before(function() {
           jQuery(document).keybind('Left', loggingCallback('Left'));
@@ -423,6 +438,12 @@ Screw.Unit(function() {
           expect(loggedCount()).to(equal, 1);
           expect(loggedKeyName()).to(equal, 'Left');
         });
+      });
+
+      describe('C-Left', function() {
+      });
+
+      describe('S-Left', function() {
       });
 
     });

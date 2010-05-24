@@ -61,9 +61,6 @@
     return triggerHandlers(data.bindings, desc, event);
   }
 
-  function keyupHandler(event) {
-  }
-
   function attachBinding(bindings, seq, handler) {
     var handlers = bindings[seq];
     if (handlers)

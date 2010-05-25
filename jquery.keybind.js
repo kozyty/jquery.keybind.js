@@ -129,8 +129,10 @@
       if (event.keyCode >= 65 && event.keyCode <= 97 && desc.shift)
         mods += 'S-';
 
-      name = _specialKeys[event.keyCode];
-      if (name === undefined) {
+      if (event.keyCode in _specialKeys) {
+        name = _specialKeys[event.keyCode];
+
+      } else {
         name = String.fromCharCode(event.keyCode);
         if (event.keyCode >= 49 && event.keyCode <= 57)
           name = _shiftedKeys[name];

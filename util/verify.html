@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>key event logger</title>
+    <script type="text/javascript" src="../spec/screw-unit/jquery-1.4.2.js"></script>
+    <script type="text/javascript" src="../jquery.keybind.js"></script>
+  </head>
+
+  <body>
+    <div>
+      <ol id="bindings"></ol>
+    </div>
+
+    <script type="text/javascript">
+      var keyBindings = [
+        "a", "z", "A", "Z",
+        "1", "9", "0",
+
+        "!", "@", "#", "$", "%", "^", "&", "*", "(", ")",
+        "-", "=", "_", "+", "[", "{", "]", "}", "<", ">",
+
+        "Left", "Right", "Up", "Down",
+        "Backspace", "Enter", "Esc",
+
+        "C-a", "A-a",
+        "C-S-a", "C-S-z",
+        "C-1", "C-!", "C--", "C-_", "C-(", "C-)",
+
+        "F1", "F2", "F12", "C-F5", "S-F5", "C-S-F5"
+      ];
+
+      var bindingElements = {};
+
+      function logBinding(key, event) {
+        var name = key.name;
+        if (name in bindingElements)
+          bindingElements[name].append("<span> - received!</span>");
+        else
+          throw("Callback triggered for unexpected binding: " + name);
+        return false;
+      }
+
+      jQuery(function($) {
+        $.each(keyBindings, function(i, binding) {
+          var elem = $("<li><span class='name'>" + binding + "</span></li>");
+          bindingElements[binding] = elem;
+          $(document).keybind(binding, logBinding);
+          $("ol#bindings").append(elem);
+        });
+      });
+    </script>
+  </body>
+</html>

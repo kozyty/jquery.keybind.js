@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>key event logger</title>
+    <script type="text/javascript" src="../spec/screw-unit/jquery-1.4.2.js"></script>
+    <script type="text/javascript" src="../jquery.keybind.js"></script>
+    <style type="text/css" media="screen">
+      body {
+        font-family: "Lucida Sans Unicode", "Lucida Grande", sans-serif;
+        font-size: 12px;
+      }
+
+      #controls {
+        width: 800px;
+        margin: 0 auto;
+        text-align: left;
+      }
+
+      #eventLog {
+        width: 800px;
+        margin: 0 auto;
+        text-align: left;
+        border-collapse: collapse;
+      }
+
+      #eventLog th {
+        padding: 5px;
+        font-weight: normal;
+        font-size: 13px;
+        color: #000;
+        background: #b9c9fe;
+      }
+
+      #eventLog td {
+        padding: 5px;
+        background: #e8edff;
+        border-top: 1px solid #fff;
+        color: #669;
+        line-height: 1.5em;
+      }
+
+      #eventLog tbody tr:hover td {
+        background: #d0dafd;
+      }
+
+      #eventLog .ord {
+        font-size: 14px;
+        font-weight: bold;
+      }
+
+      #eventLog td.props span {
+        display: inline-block;
+        font-weight: bold;
+        width: 150px;
+      }
+
+      #eventLog td.props span label {
+        font-style: italic;
+        font-weight: normal;
+      }
+
+    </style>
+  </head>
+  <body>
+    <div id="controls">
+      <p>
+        <button id="enableLogging">Enable logging</button>
+        <button id="disableLogging">Disable logging</button>
+        <button id="resetLogs">Reset logs</button>
+      </p>
+
+      <p>
+        Log events:
+        <label>
+          <input type="checkbox" name="keyup" value="1" checked="checked" />
+          keyup
+        </label>
+
+        <label>
+          <input type="checkbox" name="keydown" value="1" checked="checked" />
+          keydown
+        </label>
+
+        <label>
+          <input type="checkbox" name="keypress" value="1" checked="checked" />
+          keypress
+        </label>
+      </p>
+    </div>
+
+    <table id="eventLog">
+      <thead>
+        <tr>
+          <th class="ord">#</th>
+          <th class="type">type</th>
+          <th class="props">properties</th>
+        </tr>
+      </thead>
+
+      <tbody>
+      </tbody>
+    </table>
+
+    <script type="text/javascript">
+      var keyIdx = 0;
+
+      function propSpan(label, value) {
+        var span = $("<span/>"),
+            label = $("<label/>").text(label + ":");
+        span.text(value);
+        span.prepend(label);
+        return span;
+      }
+
+      function logEvent(event) {
+        var tbody = $('#eventLog tbody'),
+            row   = $("<tr/>");
+
+        keyIdx++;
+        row.append("<td class='ord'>" + keyIdx + "</td>");
+        row.append("<td class='name'>"
+          + "<span class='type'>" + event.type + "</span><br/>");
+
+        var td = $("<td class='props'>");
+        td.append(propSpan('which', event.which))
+          .append(propSpan('keyCode', event.keyCode))
+          .append(propSpan('charCode', event.charCode))
+          .append("<br/>")
+          .append(propSpan('keyIdentifier', event.keyIdentifier))
+          .append(propSpan('keyLocation', event.keyLocation))
+          .append("<br/>")
+          .append(propSpan('ctrlKey', event.ctrlKey))
+          .append(propSpan('metaKey', event.metaKey))
+          .append(propSpan('altKey', event.altKey))
+          .append(propSpan('shiftKey', event.shiftKey));
+        row.append(td);
+
+        tbody.prepend(row);
+      }
+
+      function maybeLog(event) {
+        var cbox = $("input[name='" + event.type + "']");
+        if (cbox.length === 0 || !cbox[0].checked)
+          return;
+        logEvent(event.originalEvent);
+      }
+
+      function bindKeyLogging(on) {
+        var doc = $(document),
+            m   = on ? $(document).bind : $(document).unbind;
+        m.call(doc, { keypress: maybeLog, keydown: maybeLog, keyup: maybeLog });
+      }
+
+      jQuery(function($) {
+        bindKeyLogging(true);
+
+        $('#enableLogging').click(function() {
+          bindKeyLogging(true);
+        });
+
+        $('#disableLogging').click(function() {
+          bindKeyLogging(false);
+        });
+
+        $('#resetLogs').click(function() {
+          keyIdx = 0;
+          $('#eventLog tbody').html('');
+        });
+      });
+    </script>
+
+  </body>
+</html>

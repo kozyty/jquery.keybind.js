@@ -126,7 +126,7 @@
     if (desc.meta) mods += 'M-';
 
     if (event.type === 'keydown') {
-      if (event.keyCode >= 65 && event.keyCode <= 97 && desc.shift)
+      if (desc.shift && event.keyCode >= 65 && event.keyCode <= 97)
         mods += 'S-';
 
       if (event.keyCode in _specialKeys) {
@@ -150,7 +150,7 @@
   }
 
   var _specialKeys = {
-    13: 'Enter', 27: 'Esc', 37: 'Left', 38: 'Up', 39: 'Right', 40: 'Down'
+    13: 'Enter', 27: 'Esc', 37: 'Left', 38: 'Up', 39: 'Right', 40: 'Down',
   };
 
   var _shiftedKeys = {

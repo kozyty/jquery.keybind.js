@@ -394,6 +394,11 @@ Screw.Unit(function() {
         });
 
         it("supports WebKit", function() {
+          keydown(17, 0, { keyIdentifier: 'Control' });
+          keydown(53, 0, { keyIdentifier: 'U+0035', ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-5');
         });
 
         it("supports Gecko", function() {

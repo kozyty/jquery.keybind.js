@@ -134,7 +134,7 @@
 
       } else {
         name = String.fromCharCode(event.keyCode);
-        if (event.keyCode >= 49 && event.keyCode <= 57)
+        if (desc.shift && event.keyCode >= 49 && event.keyCode <= 57)
           name = _shiftedKeys[name];
         else
           name = name.toLowerCase();

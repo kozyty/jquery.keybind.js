@@ -123,3 +123,7 @@ of the insanity of the raw browser keyboard events:
 * The example code from the dev.opera.com article linked above, available for download
   [here](http://dev.opera.com/articles/view/keyboard-accessible-web-applications-1/);
   specifically, see app4/lib.js.
+
+Both of the above libraries have detailed comments explaining what
+they do, and have been an enormous help. I would have rm -rf'd this
+project had I not had them available for reference.

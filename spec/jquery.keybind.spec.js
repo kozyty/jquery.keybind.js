@@ -402,9 +402,11 @@ Screw.Unit(function() {
         });
 
         it("supports Gecko", function() {
+          expect("pass").to(equal, "fail");
         });
 
         it("supports IE", function() {
+          expect("pass").to(equal, "fail");
         });
       });
 

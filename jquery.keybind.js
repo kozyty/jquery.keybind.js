@@ -68,7 +68,7 @@
   }
 
   function triggerHandlers(bindings, desc, event) {
-    var handlers = bindings[desc.chord],
+    var handlers = bindings[desc.name],
         retVal   = true;
 
     if (handlers === undefined)
@@ -113,7 +113,7 @@
       desc.shift = true;
 
     desc.modified = desc.ctrl || desc.alt || desc.meta || desc.shift;
-    desc.chord = keyName(desc, event);
+    desc.name = keyName(desc, event);
 
     return desc;
   }

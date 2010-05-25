@@ -676,7 +676,7 @@ Screw.Unit(function() {
   function loggedOrder()   { return cbLogger.order; }
   function loggedEvent()   { return cbLogger.event; }
   function loggedKey()     { return cbLogger.key; }
-  function loggedKeyName() { return cbLogger.key.chord; }
+  function loggedKeyName() { return cbLogger.key.name; }
   function loggedCount()   { return cbLogger.count; }
 
   //// Event generation

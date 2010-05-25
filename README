@@ -17,8 +17,8 @@ Examples
 
     $(document).keybind('a', function(key, event) {
       // key is an object describing the keychord that triggered this event:
-      //   { chord: 'a',    modified: false, shift: false, ctrl: false, ... }
-      //   { chord: 'C-F1', modified: true,  shift: false, ctrl: true, ... }
+      //   { name: 'a',    modified: false, shift: false, ctrl: false, ... }
+      //   { name: 'C-F1', modified: true,  shift: false, ctrl: true, ... }
       // event is the jQuery event object
       // event.originalEvent is the browser's event object, stored by jQuery
     });

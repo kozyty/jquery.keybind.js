@@ -388,6 +388,21 @@ Screw.Unit(function() {
         });
       });
 
+      describe('C-5', function() {
+        before(function() {
+          jQuery(document).keybind('C-5', loggingCallback('C-5'));
+        });
+
+        it("supports WebKit", function() {
+        });
+
+        it("supports Gecko", function() {
+        });
+
+        it("supports IE", function() {
+        });
+      });
+
       describe('C-%', function() {
         before(function() {
           jQuery(document).keybind('C-%', loggingCallback('C-%'));

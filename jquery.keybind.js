@@ -92,7 +92,7 @@
         (event.type === 'keypress' && event.keyCode >= 37 && event.keyCode <= 40))
       return false;
 
-    if (event.keyCode in _specialKeys)
+    if (event.keyCode in _specialKeys && event.keyCode != 189) // XXX
       return true;
 
     return false;
@@ -126,15 +126,20 @@
     if (desc.meta) mods += 'M-';
 
     if (event.type === 'keydown') {
-      if (desc.shift && event.keyCode >= 65 && event.keyCode <= 97)
+      var keyCode = event.keyCode;
+
+      if (keyCode in _funkyKeyCodes)
+        keyCode = _funkyKeyCodes[keyCode];
+
+      if (desc.shift && keyCode >= 65 && keyCode <= 97)
         mods += 'S-';
 
-      if (event.keyCode in _specialKeys) {
-        name = _specialKeys[event.keyCode];
+      if (keyCode in _specialKeys) {
+        name = _specialKeys[keyCode];
 
       } else {
-        name = String.fromCharCode(event.keyCode);
-        if (desc.shift && event.keyCode >= 49 && event.keyCode <= 57)
+        name = String.fromCharCode(keyCode);
+        if (desc.shift && keyCode >= 49 && keyCode <= 57)
           name = _shiftedKeys[name];
         else
           name = name.toLowerCase();
@@ -151,6 +156,12 @@
 
   var _specialKeys = {
     13: 'Enter', 27: 'Esc', 37: 'Left', 38: 'Up', 39: 'Right', 40: 'Down',
+    189: '-'
+  };
+
+  // Gecko -> WebKit/IE
+  var _funkyKeyCodes = {
+    109: 189
   };
 
   var _shiftedKeys = {

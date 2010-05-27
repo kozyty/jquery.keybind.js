@@ -402,11 +402,20 @@ Screw.Unit(function() {
         });
 
         it("supports Gecko", function() {
-          expect("pass").to(equal, "fail");
+          keydown(17, 0);
+          keydown(53, 0, { ctrlKey: true });
+          keypress(0, 53, { ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-5');
         });
 
         it("supports IE", function() {
-          expect("pass").to(equal, "fail");
+          keydown(17, undefined, { ctrlKey: true });
+          keydown(53, undefined, { ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, 'C-5');
         });
       });
 

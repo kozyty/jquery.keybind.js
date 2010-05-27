@@ -92,7 +92,7 @@
         (event.type === 'keypress' && event.keyCode >= 37 && event.keyCode <= 40))
       return false;
 
-    if (event.keyCode in _specialKeys && event.keyCode != 189) // XXX
+    if (event.keyCode in _specialKeys && event.keyCode != 189 && event.keyCode != 187) // XXX
       return true;
 
     return false;
@@ -133,16 +133,10 @@
       if (desc.shift && keyCode >= 65 && keyCode <= 97)
         mods += 'S-';
 
-      if (keyCode in _specialKeys) {
+      if (keyCode in _specialKeys)
         name = _specialKeys[keyCode];
-
-      } else {
-        name = String.fromCharCode(keyCode);
-        if (desc.shift && keyCode >= 49 && keyCode <= 57)
-          name = _shiftedKeys[name];
-        else
-          name = name.toLowerCase();
-      }
+      else
+        name = String.fromCharCode(keyCode).toLowerCase();
 
     } else if (event.type === 'keypress') {
       name = String.fromCharCode(event.charCode || event.keyCode);
@@ -150,12 +144,15 @@
     } else
       throw("could prolly support keyup but explicitly don't right now");
 
+    if (desc.shift && name in _shiftedKeys)
+      name = _shiftedKeys[name];
+
     return mods + name;
   }
 
   var _specialKeys = {
     13: 'Enter', 27: 'Esc', 37: 'Left', 38: 'Up', 39: 'Right', 40: 'Down',
-    189: '-'
+    187: '=', 189: '-'
   };
 
   // Gecko -> WebKit/IE
@@ -165,7 +162,8 @@
 
   var _shiftedKeys = {
     '1': '!', '2': '@', '3': '#', '4': '$', '5': '%',
-    '6': '^', '7': '&', '8': '*', '9': '(', '0': ')'
+    '6': '^', '7': '&', '8': '*', '9': '(', '0': ')',
+    '=': '+'
   };
 
 }(jQuery));

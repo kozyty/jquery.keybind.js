@@ -671,6 +671,12 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
+          keydown(16, undefined, { shiftKey: true });
+          keydown(187, undefined, { shiftKey: true });
+          keypress(43, undefined, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "+");
         });
       });
 
@@ -694,10 +700,18 @@ Screw.Unit(function() {
           keydown(16, 0, { ctrlKey: true });
           keydown(61, 0, { ctrlKey: true, shiftKey: true });
           keypress(0, 43, { ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "C-+");
         });
 
         it("supports IE", function() {
-          expect(false).to(equal, true);
+          keydown(17, undefined, { ctrlKey: true });
+          keydown(16, undefined, { ctrlKey: true, shiftKey: true });
+          keydown(187, undefined, { ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "C-+");
         });
       });
 
@@ -749,7 +763,11 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          expect(false).to(equal, true);
+          keydown(17, undefined, { ctrlKey: true });
+          keydown(37, undefined, { ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "C-Left");
         });
       });
 
@@ -776,7 +794,11 @@ Screw.Unit(function() {
         });
 
         it("supports IE", function() {
-          expect(false).to(equal, true);
+          keydown(16, undefined, { shiftKey: true });
+          keydown(37, undefined, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "S-Left");
         });
       });
 

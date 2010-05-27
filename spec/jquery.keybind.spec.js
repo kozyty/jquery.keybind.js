@@ -610,7 +610,7 @@ Screw.Unit(function() {
 
         it("supports IE", function() {
           keydown(187, undefined);
-          keydown(61, undefined);
+          keypress(61, undefined);
 
           expect(loggedCount()).to(equal, 1);
           expect(loggedKeyName()).to(equal, '=');

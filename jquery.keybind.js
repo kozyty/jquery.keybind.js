@@ -112,7 +112,6 @@
     if (event.shiftKey)
       desc.shift = true;
 
-    desc.modified = desc.ctrl || desc.alt || desc.meta || desc.shift;
     desc.name = keyName(desc, event);
 
     return desc;

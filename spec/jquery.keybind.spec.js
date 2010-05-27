@@ -649,9 +649,56 @@ Screw.Unit(function() {
       });
 
       describe('+', function() {
+        before(function() {
+          jQuery(document).keybind('+', loggingCallback('+'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(16, 0, { keyIdentifier: 'Shift' });
+          keydown(187, 0, { keyIdentifier: 'U+00BB', shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "+");
+        });
+
+        it("supports Gecko", function() {
+          keydown(16, 0);
+          keydown(61, 0, { shiftKey: true });
+          keypress(0, 43, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "+");
+        });
+
+        it("supports IE", function() {
+        });
       });
 
       describe('C-+', function() {
+        before(function() {
+          jQuery(document).keybind('C-+', loggingCallback('C-+'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(17, 0, { keyIdentifier: 'Control' });
+          keydown(16, 0, { keyIdentifier: 'Shift', ctrlKey: true });
+          keydown(187, 0, { keyIdentifier: 'U+00BB',
+                            ctrlKey: true, shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "C-+");
+        });
+
+        it("supports Gecko", function() {
+          keydown(17, 0);
+          keydown(16, 0, { ctrlKey: true });
+          keydown(61, 0, { ctrlKey: true, shiftKey: true });
+          keypress(0, 43, { ctrlKey: true, shiftKey: true });
+        });
+
+        it("supports IE", function() {
+          expect(false).to(equal, true);
+        });
       });
 
       describe('Left', function() {
@@ -680,9 +727,57 @@ Screw.Unit(function() {
       });
 
       describe('C-Left', function() {
+        before(function() {
+          jQuery(document).keybind("C-Left", loggingCallback("C-Left"));
+        });
+
+        it("supports WebKit", function() {
+          keydown(17, 0, { keyIdentifier: 'Control' });
+          keydown(37, 0, { keyIdentifier: 'Left', ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "C-Left");
+        });
+
+        it("supports Gecko", function() {
+          keydown(17, 0);
+          keydown(37, 0, { ctrlKey: true });
+          keypress(37, 0, { ctrlKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "C-Left");
+        });
+
+        it("supports IE", function() {
+          expect(false).to(equal, true);
+        });
       });
 
       describe('S-Left', function() {
+        before(function() {
+          jQuery(document).keybind('S-Left', loggingCallback('S-Left'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(16, 0, { keyIdentifier: 'Shift' });
+          keydown(37, 0, { keyIdentifier: 'Left', shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "S-Left");
+        });
+
+        it("supports Gecko", function() {
+          keydown(16, 0);
+          keydown(37, 0, { shiftKey: true });
+          keypress(37, 0, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "S-Left");
+        });
+
+        it("supports IE", function() {
+          expect(false).to(equal, true);
+        });
       });
 
     });

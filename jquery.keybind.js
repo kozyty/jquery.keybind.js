@@ -112,9 +112,7 @@
   }
 
   function keyDescription(event) {
-    var desc = {},
-        mods = '',
-        name;
+    var desc = {};
 
     if (event.ctrlKey)
       desc.ctrl = true;

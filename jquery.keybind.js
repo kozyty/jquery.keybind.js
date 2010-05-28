@@ -87,12 +87,22 @@
       return true;
 
     // % .. (, which look like arrow keys
-    if ((event.charCode >= 37 && event.charCode <= 40) ||
+    if ((desc.charCode >= 37 && desc.charCode <= 40) ||
         // same thing but on IE
-        (event.type === 'keypress' && event.keyCode >= 37 && event.keyCode <= 40))
+        (event.type === 'keypress' && desc.keyCode >= 37 && desc.keyCode <= 40))
       return false;
 
-    if (event.keyCode in _specialKeys && event.keyCode != 189 && event.keyCode != 187) // XXX
+    if (desc.keyCode === 189 || desc.keyCode === 187)
+      return true;
+
+    if (desc.charCode === 45 || desc.keyCode === 45) // -
+      return true;
+
+    if (desc.charCode === 61 || desc.keyCode === 61
+        || desc.charCode === 43 || desc.keyCode === 43) // =
+      return true;
+
+    if (desc.keyCode in _specialKeys)
       return true;
 
     return false;
@@ -112,9 +122,18 @@
     if (event.shiftKey)
       desc.shift = true;
 
+    desc.keyCode  = realKeyCode(desc, event);
+    desc.charCode = event.charCode;
     desc.name = keyName(desc, event);
 
     return desc;
+  }
+
+  function realKeyCode(desc, event) {
+    var keyCode = event.keyCode;
+    if (keyCode in _funkyKeyCodes)
+      keyCode = _funkyKeyCodes[keyCode];
+    return keyCode;
   }
 
   function keyName(desc, event) {
@@ -125,10 +144,7 @@
     if (desc.meta) mods += 'M-';
 
     if (event.type === 'keydown') {
-      var keyCode = event.keyCode;
-
-      if (keyCode in _funkyKeyCodes)
-        keyCode = _funkyKeyCodes[keyCode];
+      var keyCode = desc.keyCode;
 
       if (desc.shift && keyCode >= 65 && keyCode <= 97)
         mods += 'S-';
@@ -139,7 +155,7 @@
         name = String.fromCharCode(keyCode).toLowerCase();
 
     } else if (event.type === 'keypress') {
-      name = String.fromCharCode(event.charCode || event.keyCode);
+      name = String.fromCharCode(desc.charCode || desc.keyCode);
 
     } else
       throw("could prolly support keyup but explicitly don't right now");

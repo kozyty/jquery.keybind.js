@@ -98,6 +98,9 @@
     if (desc.charCode === 45 || desc.keyCode === 45) // -
       return true;
 
+    if (desc.charCode === 95 || desc.keyCode === 95) // _
+      return true;
+
     if (desc.charCode === 61 || desc.keyCode === 61
         || desc.charCode === 43 || desc.keyCode === 43) // =
       return true;
@@ -146,8 +149,8 @@
     if (event.type === 'keydown') {
       var keyCode = desc.keyCode;
 
-      if (desc.shift && ((keyCode >= 65 && keyCode <= 97)
-                        || (keyCode >= 37 && keyCode <= 40)))
+      if (desc.shift && ((keyCode >= 65 && keyCode <= 97) // a..z
+                        || (keyCode >= 37 && keyCode <= 40))) // Left..Down
         mods += 'S-';
 
       if (keyCode in _specialKeys)
@@ -180,7 +183,7 @@
   var _shiftedKeys = {
     '1': '!', '2': '@', '3': '#', '4': '$', '5': '%',
     '6': '^', '7': '&', '8': '*', '9': '(', '0': ')',
-    '=': '+'
+    '=': '+', '-': '_'
   };
 
 }(jQuery));

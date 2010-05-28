@@ -559,8 +559,8 @@ Screw.Unit(function() {
           keydown(16, 0, { keyIdentifier: 'Shift' });
           keydown(17, 0, { keyIdentifier: 'Control',
                            shiftKey: true });
-          keypress(189, 0, { keyIdentifier: 'U+00BD',
-                             ctrlKey: true, shiftKey: true });
+          keydown(189, 0, { keyIdentifier: 'U+00BD',
+                            ctrlKey: true, shiftKey: true });
 
           expect(loggedCount()).to(equal, 1);
           expect(loggedKeyName()).to(equal, 'C-_');

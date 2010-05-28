@@ -82,6 +82,50 @@ Screw.Unit(function() {
       });
     });
 
+    describe('Multi-key sequences', function() {
+      before(function() {
+        jQuery(document).keybind('a b', loggingCallback('a b'));
+      });
+
+      it("fires after all keys have been pressed", function() {
+        press('a');
+        press('b');
+
+        expect(loggedCount()).to(equal, 1);
+        expect(loggedKeyName()).to(equal, "a b");
+      });
+
+      it("throws an error if a new binding would shadow another", function() {
+        var thrown = false;
+        try {
+          jQuery(document).keybind('a')
+        } catch (e) {
+          thrown = true;
+        }
+
+        expect(thrown).to(be_true);
+      });
+
+      it("throws an error if a new binding would be shadowed by another", function() {
+        var thrown = false;
+        try {
+          jQuery(document).keybind('a b c');
+        } catch (e) {
+          thrown = true;
+        }
+
+        expect(thrown).to(be_true);
+      });
+
+      it("will not fire if the time between keys is greater than the timeout", function() {
+        expect(false).to(equal, true);
+      });
+
+      it("will not concern itself with a timeout if set to -1", function() {
+        expect(false).to(equal, true);
+      });
+    });
+
     describe('keyunbindAll', function() {
       it("removes the data attached to the element", function() {
         jQuery(document).keybind('a', returnTrue);

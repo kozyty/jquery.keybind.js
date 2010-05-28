@@ -147,23 +147,21 @@
     if (event.type === 'keydown') {
       var keyCode = desc.keyCode;
 
-      if (desc.shift && ((keyCode >= 65 && keyCode <= 97) // a..z
-                        || (keyCode >= 37 && keyCode <= 40))) // Left..Down
-        mods += 'S-';
-
       if (keyCode in _specialKeys)
         name = _specialKeys[keyCode];
       else
         name = String.fromCharCode(keyCode).toLowerCase();
+
+      if (desc.shift && name in _shiftedKeys)
+        name = _shiftedKeys[name];
+      else if (desc.shift)
+        mods += 'S-';
 
     } else if (event.type === 'keypress') {
       name = String.fromCharCode(desc.charCode || desc.keyCode);
 
     } else
       throw("could prolly support keyup but explicitly don't right now");
-
-    if (desc.shift && name in _shiftedKeys)
-      name = _shiftedKeys[name];
 
     return mods + name;
   }

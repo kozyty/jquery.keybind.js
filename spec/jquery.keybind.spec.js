@@ -332,6 +332,34 @@ Screw.Unit(function() {
         });
       });
 
+      describe("S-Enter", function() {
+        before(function() {
+          jQuery(document).keybind('S-Enter', loggingCallback('S-Enter'));
+        });
+
+        it("supports WebKit", function() {
+          keydown(16, 0, { keyIdentifier: 'Shift' });
+          keydown(13, 0, { keyIdentifier: 'Enter', shiftKey: true });
+          keypress(13, 13, { keyIdentifier: 'Enter', shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "S-Enter");
+        });
+
+        it("supports Gecko", function() {
+          keydown(16, 0);
+          keydown(13, 0, { shiftKey: true });
+          keypress(13, 0, { shiftKey: true });
+
+          expect(loggedCount()).to(equal, 1);
+          expect(loggedKeyName()).to(equal, "S-Enter");
+        });
+
+        it("supports IE", function() {
+          expect(false).to(equal, true);
+        });
+      });
+
       describe('Esc', function() {
         before(function() {
           jQuery(document).keybind('Esc', loggingCallback('Esc'));

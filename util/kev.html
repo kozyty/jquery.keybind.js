@@ -72,17 +72,17 @@
       <p>
         Log events:
         <label>
-          <input type="checkbox" name="keyup" value="1" checked="checked" />
+          <input type="checkbox" id="logkeyup" value="1" checked="checked" />
           keyup
         </label>
 
         <label>
-          <input type="checkbox" name="keydown" value="1" checked="checked" />
+          <input type="checkbox" id="logkeydown" value="1" checked="checked" />
           keydown
         </label>
 
         <label>
-          <input type="checkbox" name="keypress" value="1" checked="checked" />
+          <input type="checkbox" id="logkeypress" value="1" checked="checked" />
           keypress
         </label>
       </p>
@@ -102,7 +102,8 @@
     </table>
 
     <script type="text/javascript">
-      var keyIdx = 0;
+      var keyIdx = 0,
+          loggingEnabled = true;
 
       function propSpan(label, value) {
         var span = $("<span/>"),
@@ -139,28 +140,21 @@
       }
 
       function maybeLog(event) {
-        var cbox = $("input[name='" + event.type + "']");
-        if (cbox.length === 0 || !cbox[0].checked)
+        var cbox = $("input#log" + event.type);
+        if (!loggingEnabled || cbox.length === 0 || !cbox[0].checked)
           return;
         logEvent(event.originalEvent);
-        return false;
-      }
-
-      function bindKeyLogging(on) {
-        var doc = $(document),
-            m   = on ? $(document).bind : $(document).unbind;
-        m.call(doc, { keypress: maybeLog, keydown: maybeLog, keyup: maybeLog });
       }
 
       jQuery(function($) {
-        bindKeyLogging(true);
+        jQuery(document).bind({ keypress: maybeLog, keydown: maybeLog, keyup: maybeLog });
 
         $('#enableLogging').click(function() {
-          bindKeyLogging(true);
+          loggingEnabled = true;
         });
 
         $('#disableLogging').click(function() {
-          bindKeyLogging(false);
+          loggingEnabled = false;
         });
 
         $('#resetLogs').click(function() {

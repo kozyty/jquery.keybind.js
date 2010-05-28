@@ -146,7 +146,8 @@
     if (event.type === 'keydown') {
       var keyCode = desc.keyCode;
 
-      if (desc.shift && keyCode >= 65 && keyCode <= 97)
+      if (desc.shift && ((keyCode >= 65 && keyCode <= 97)
+                        || (keyCode >= 37 && keyCode <= 40)))
         mods += 'S-';
 
       if (keyCode in _specialKeys)

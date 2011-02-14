@@ -57,7 +57,7 @@ Caveats
 IE seems to have no concept of the meta key. You should not use any
 'M-...' keybindings if you expect them to work for IE users. Even if
 you don't care about IE users, you probably shouldn't rely on the meta
-key, as few people no what the hell a meta key is. It may, however,
+key, as few people know what the hell a meta key is. It may, however,
 be reasonable to provide M- bindings which are also available via other
 bindings, so that Mac users can use their Cmd key (which is meta).
 

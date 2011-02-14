@@ -11,9 +11,9 @@
       }
 
       if (typeof seq === "object")
-        $.each(seq, function(s, h) { attachBinding(data.bindings, s, h); });
+        $.each(seq, function(s, h) { attachBinding(data.bindings, seqChords(s), h); });
       else
-        attachBinding(data.bindings, seq, handler);
+        attachBinding(data.bindings, seqChords(seq), handler);
 
       return this;
     },
@@ -59,12 +59,28 @@
     return triggerHandlers(data.bindings, desc, event);
   }
 
-  function attachBinding(bindings, seq, handler) {
-    var handlers = bindings[seq];
-    if (handlers)
-      handlers.push(handler)
+  function attachBinding(bindings, chords, handler) {
+    var chord = chords.shift(),
+        entry = bindings[chord];
+
+    if (entry) {
+      if (chords.length > 0 && entry.length !== undefined)
+        throw "Keybinding would be shadowed by pre-existing keybinding";
+
+      if (chords.length === 0 && entry.length === undefined)
+        throw "Keybinding would shadow pre-existing keybinding";
+
+    } else {
+      if (chords.length > 0)
+        bindings[chord] = entry = {};
+      else
+        bindings[chord] = entry = [];
+    }
+
+    if (chords.length === 0)
+      entry.push(handler);
     else
-      bindings[seq] = [handler];
+      attachBinding(entry, chords, handler);
   }
 
   function triggerHandlers(bindings, desc, event) {
@@ -80,6 +96,10 @@
     });
 
     return retVal;
+  }
+
+  function seqChords(seq) {
+    return seq.split(/\s+/);
   }
 
   function shouldTriggerOnKeydown(desc, event) {
